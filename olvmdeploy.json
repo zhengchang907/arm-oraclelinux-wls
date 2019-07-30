@@ -89,7 +89,7 @@
       "publicIPAddressName":"myPublicIP",
       "publicIPAddressType":"Dynamic",
       "vmName":"WebLogicServerVM",
-      "vmSize":"Standard_A1",
+      "vmSize":"[parameters('vmSizeSelect')]",
       "virtualNetworkName":"MyVNET",
       "ScriptFolder": "scripts",
       "ScriptFileName": "download.sh",
