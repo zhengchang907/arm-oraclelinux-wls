@@ -16,6 +16,9 @@
     },
     "otnAccountPassword": {
       "value": "GEN-UNIQUE"
-    }
+    },
+    "vmSizeSelect":{
+      "value": "GEN-UNIQUE"
+    }    
   }
 }
