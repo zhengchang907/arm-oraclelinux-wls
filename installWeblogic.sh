@@ -250,7 +250,7 @@ else
     exit 1
 fi
 
-echo "Installing zip unzip wget vnc-server"
+echo "Installing zip unzip wget vnc-server rng-tools"
 sudo yum install -y zip unzip wget vnc-server rng-tools
 
 echo "unzipping fmw_12.2.1.3.0_wls_Disk1_1of1.zip..."
@@ -274,3 +274,5 @@ create_oraUninstallResponseTemplate
 installWLS
 
 cleanup
+
+echo "Weblogic Server Installation Completed succesfully."
