@@ -18,12 +18,14 @@ cleanup()
 {
     echo "Cleaning up temporary files..."
 	
-	rm -f $BASE_DIR/jdk-8u221-linux-x64.tar.gz
-	rm -f $BASE_DIR/fmw_12.2.1.3.0_wls_Disk1_1of1.zip
+    rm -f $BASE_DIR/jdk-8u221-linux-x64.tar.gz
+    rm -f $BASE_DIR/fmw_12.2.1.3.0_wls_Disk1_1of1.zip
 	
     rm -rf $JDK_PATH/jdk-8u221-linux-x64.tar.gz
     rm -rf $WLS_PATH/fmw_12.2.1.3.0_wls_Disk1_1of1.zip
-	
+    
+    rm -rf $WLS_PATH/silent-template
+    	
     rm -rf $WLS_JAR
     echo "Cleanup completed."
 }
@@ -185,7 +187,7 @@ CURR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export BASE_DIR="$(readlink -f ${CURR_DIR})"
 
 if [ $# -ne 2 ]
-  then
+then
     usage
 	exit 1
 fi
@@ -194,6 +196,7 @@ export otnusername="$1"
 export otnpassword="$2"
 
 if [[ -z "$otnusername" || -z "$otnpassword" ]]
+then
 	echo_stderr "otnusername or otnpassword is required. "
 	exit 1
 fi	
