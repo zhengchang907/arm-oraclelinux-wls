@@ -28,7 +28,7 @@
       "acceptOTNLicenseAgreement":{
          "type":"string",
          "metadata":{
-            "description":"Do you agree to provide OTN credentials to accept OTN License Agreement? Enter yes to agree, else no (yes/no)"
+            "description":"Do you agree to provide OTN credentials to accept OTN License Agreement? Enter Y or y to agree, else N or n"
          }
       },
       "otnAccountUsername":{
