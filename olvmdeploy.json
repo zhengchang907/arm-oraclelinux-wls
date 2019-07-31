@@ -51,7 +51,7 @@
       },
       "linuxOSVersion":{
          "type":"string",
-         "defaultValue":"7.6",
+         "defaultValue":"7.3",
          "allowedValues":[
             "7.6",
             "7.5",
