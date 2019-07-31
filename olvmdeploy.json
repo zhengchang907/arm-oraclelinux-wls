@@ -25,6 +25,12 @@
             "description":"SSH Key or password for the Virtual Machine. SSH key is recommended."
          }
       },
+      "acceptOTNLicenseAgreement":{
+         "type":"string",
+         "metadata":{
+            "description":"Do you agree to provide OTN credentials to accept OTN License Agreement? Enter yes to agree, else no (yes/no)"
+         }
+      },
       "otnAccountUsername":{
          "type":"string",
          "metadata":{
@@ -78,21 +84,21 @@
      }    
    },
    "variables":{
-      "storageAccountName":"[concat(uniquestring(resourceGroup().id), 'salinuxvm')]",
+      "storageAccountName":"[concat(uniquestring(resourceGroup().id), 'olvm')]",
       "imagePublisher":"Oracle",
       "imageOffer":"Oracle-Linux",
-      "nicName":"myVMNic",
+      "nicName":"olvmNIC",
       "addressPrefix":"10.0.0.0/16",
       "subnetName":"Subnet",
       "subnetPrefix":"10.0.0.0/24",
       "storageAccountType":"Standard_LRS",
-      "publicIPAddressName":"myPublicIP",
+      "publicIPAddressName":"olvmPublicIP",
       "publicIPAddressType":"Dynamic",
       "vmName":"WebLogicServerVM",
       "vmSize":"[parameters('vmSizeSelect')]",
-      "virtualNetworkName":"MyVNET",
+      "virtualNetworkName":"olvmVNET",
       "ScriptFolder": "scripts",
-      "ScriptFileName": "download.sh",
+      "ScriptFileName": "installWeblogic.sh",
       "linuxConfiguration":{
          "disablePasswordAuthentication":true,
          "ssh":{
@@ -248,7 +254,7 @@
                     "fileUris": [
             "https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls/master/installWeblogic.sh"
             ],
-              "commandToExecute": "[concat('sh installWeblogic.sh',' ',parameters('otnAccountUsername'),' ',parameters('otnAccountPassword'))]"
+              "commandToExecute": "[concat('sh installWeblogic.sh',' ',parameters('acceptOTNLicenseAgreement'),' ',parameters('otnAccountUsername'),' ',parameters('otnAccountPassword'))]"
             }
          }
       }
