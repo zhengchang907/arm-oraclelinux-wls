@@ -9,7 +9,7 @@ function echo_stderr ()
 #Function to display usage message
 function usage()
 {
-  echo_stderr "./installWeblogic.sh <otnusername> <otnpassword>"  
+  echo_stderr "./installWeblogic.sh <acceptOTNLicenseAgreement> <otnusername> <otnpassword>"  
 }
 
 #Function to cleanup all temporary files
@@ -185,7 +185,7 @@ function installWLS()
 CURR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export BASE_DIR="$(readlink -f ${CURR_DIR})"
 
-if [ $# -ne 2 ]
+if [ $# -ne 3 ]
 then
     usage
 	exit 1
