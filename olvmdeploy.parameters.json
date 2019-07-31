@@ -11,6 +11,9 @@
     "dnsLabelPrefix": {
       "value": "GEN-UNIQUE"
     },
+    "acceptOTNLicenseAgreement": {
+      "value": "GEN-UNIQUE"
+    },
     "otnAccountUsername": {
       "value": "GEN-UNIQUE"
     },
