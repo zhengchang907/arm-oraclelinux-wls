@@ -1,27 +1,26 @@
 #!/bin/bash
 
-
 #Function to output message to StdErr
-echo_stderr ()
+function echo_stderr ()
 {
     echo "$@" >&2
 }
 
 #Function to display usage message
-usage()
+function usage()
 {
   echo_stderr "./installWeblogic.sh <otnusername> <otnpassword>"  
 }
 
 #Function to cleanup all temporary files
-cleanup()
+function cleanup()
 {
     echo "Cleaning up temporary files..."
 	
-    rm -f $BASE_DIR/jdk-8u221-linux-x64.tar.gz
+    rm -f $BASE_DIR/jdk-8u131-linux-x64.tar.gz
     rm -f $BASE_DIR/fmw_12.2.1.3.0_wls_Disk1_1of1.zip
 	
-    rm -rf $JDK_PATH/jdk-8u221-linux-x64.tar.gz
+    rm -rf $JDK_PATH/jdk-8u131-linux-x64.tar.gz
     rm -rf $WLS_PATH/fmw_12.2.1.3.0_wls_Disk1_1of1.zip
     
     rm -rf $WLS_PATH/silent-template
@@ -31,7 +30,7 @@ cleanup()
 }
 
 #Function to create Weblogic Installation Location Template File for Silent Installation
-create_oraInstlocTemplate()
+function create_oraInstlocTemplate()
 {
     echo "creating Install Location Template..."
 
@@ -42,7 +41,7 @@ EOF
 }
 
 #Function to create Weblogic Installation Response Template File for Silent Installation
-create_oraResponseTemplate()
+function create_oraResponseTemplate()
 {
 
     echo "creating Response Template..."
@@ -56,7 +55,7 @@ Response File Version=1.0.0.0.0
 [GENERIC]
 
 #Set this to true if you wish to skip software updates
-DECLINE_AUTO_UPDATES=true
+DECLINE_AUTO_UPDATES=false
 
 #My Oracle Support User Name
 MOS_USERNAME=
@@ -139,7 +138,7 @@ EOF
 }
 
 #Install Weblogic Server using Silent Installation Templates
-installWLS()
+function installWLS()
 {
     # Using silent file templates create silent installation required files
     echo "Creating silent files for installation from silent file templates..."
@@ -229,18 +228,18 @@ curl -s https://raw.githubusercontent.com/typekpb/oradown/master/oradown.sh  | b
 
 #download jdk from OTN
 echo "Downloading jdk from OTN..."
-curl -s https://raw.githubusercontent.com/typekpb/oradown/master/oradown.sh  | bash -s -- --cookie=accept-weblogicserver-server --username="${otnusername}" --password="${otnpassword}" https://download.oracle.com/otn/java/jdk/8u221-b11/230deb18db3e4014bb8e3e8324f81b43/jdk-8u221-linux-x64.tar.gz
+curl -s https://raw.githubusercontent.com/typekpb/oradown/master/oradown.sh  | bash -s -- --cookie=accept-weblogicserver-server --username="${otnusername}" --password="${otnpassword}" https://download.oracle.com/otn/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz
 
 sudo chown -R $username:$groupname /u01/app
 
 sudo cp $BASE_DIR/fmw_12.2.1.3.0_wls_Disk1_1of1.zip $WLS_PATH/fmw_12.2.1.3.0_wls_Disk1_1of1.zip
-sudo cp $BASE_DIR/jdk-8u221-linux-x64.tar.gz $JDK_PATH/jdk-8u221-linux-x64.tar.gz
+sudo cp $BASE_DIR/jdk-8u131-linux-x64.tar.gz $JDK_PATH/jdk-8u131-linux-x64.tar.gz
 
 echo "extracting and setting up jdk..."
-sudo tar -zxvf $JDK_PATH/jdk-8u221-linux-x64.tar.gz --directory $JDK_PATH
+sudo tar -zxvf $JDK_PATH/jdk-8u131-linux-x64.tar.gz --directory $JDK_PATH
 sudo chown -R $username:$groupname $JDK_PATH
 
-export JAVA_HOME=$JDK_PATH/jdk1.8.0_221
+export JAVA_HOME=$JDK_PATH/jdk1.8.0_131
 export PATH=$JAVA_HOME/bin:$PATH
 
 java -version
