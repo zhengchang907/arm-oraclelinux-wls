@@ -219,10 +219,10 @@ export WLS_VER="12.2.1.3.0"
 echo "Adding oracle user and group..."
 groupname="oracle"
 username="oracle"
+user_home_dir="/u01/oracle"
 USER_GROUP=${groupname}
 sudo groupadd $groupname
-sudo useradd -g $groupname $username
-
+sudo useradd -d ${user_home_dir} -g $groupname $username
 
 JDK_PATH="/u01/app/jdk"
 WLS_PATH="/u01/app/wls"
