@@ -9,22 +9,38 @@ function echo_stderr ()
 #Function to display usage message
 function usage()
 {
-  echo_stderr "./installWeblogic.sh <acceptOTNLicenseAgreement> <otnusername> <otnpassword>"  
+  echo_stderr "./installWeblogic.sh <acceptOTNLicenseAgreement> <otnusername> <otnpassword>"
+}
+
+function validateJDKZipCheckSum()
+{
+  jdkZipFile="$1"
+  jdk18u131Sha256Checksum="62b215bdfb48bace523723cdbb2157c665e6a25429c73828a32f00e587301236"
+
+  downloadedJDKZipCheckSum=$(sha256sum $jdkZipFile | cut -d ' ' -f 1)
+
+  if [ "${jdk18u131Sha256Checksum}" == "${downloadedJDKZipCheckSum}" ];
+  then
+    echo "Checksum match successful. Proceeding with Weblogic Install Kit Zip Download from OTN..."
+  else
+    echo "Checksum match failed. Please check the supplied OTN credentials and try again."
+    exit 1
+  fi
 }
 
 #Function to cleanup all temporary files
 function cleanup()
 {
     echo "Cleaning up temporary files..."
-	
+
     rm -f $BASE_DIR/jdk-8u131-linux-x64.tar.gz
     rm -f $BASE_DIR/fmw_12.2.1.3.0_wls_Disk1_1of1.zip
-	
+
     rm -rf $JDK_PATH/jdk-8u131-linux-x64.tar.gz
     rm -rf $WLS_PATH/fmw_12.2.1.3.0_wls_Disk1_1of1.zip
-    
+
     rm -rf $WLS_PATH/silent-template
-    	
+
     rm -rf $WLS_JAR
     echo "Cleanup completed."
 }
@@ -175,7 +191,7 @@ function installWLS()
       echo_stderr "Installation is not successful"
       exit 1
     fi
-    echo "#########################################################################################################"                                          
+    echo "#########################################################################################################"
 
 }
 
@@ -188,7 +204,7 @@ export BASE_DIR="$(readlink -f ${CURR_DIR})"
 if [ $# -ne 3 ]
 then
     usage
-	exit 1
+    exit 1
 fi
 
 export acceptOTNLicenseAgreement="$1"
@@ -197,8 +213,8 @@ export otnpassword="$3"
 
 if [ -z "$acceptOTNLicenseAgreement" ];
 then
-	echo _stderr "acceptOTNLicenseAgreement is required. Value should be either Y/y or N/n"
-	exit 1
+        echo _stderr "acceptOTNLicenseAgreement is required. Value should be either Y/y or N/n"
+        exit 1
 fi
 
 if [[ ! ${acceptOTNLicenseAgreement} =~ ^[Yy]$ ]];
@@ -209,9 +225,9 @@ fi
 
 if [[ -z "$otnusername" || -z "$otnpassword" ]]
 then
-	echo_stderr "otnusername or otnpassword is required. "
-	exit 1
-fi	
+        echo_stderr "otnusername or otnpassword is required. "
+        exit 1
+fi
 
 export WLS_VER="12.2.1.3.0"
 
@@ -235,13 +251,15 @@ sudo rm -rf $WLS_PATH/*
 
 cleanup
 
-#Download Weblogic install jar from OTN
-echo "Downloading weblogic install kit from OTN..."
-curl -s https://raw.githubusercontent.com/typekpb/oradown/master/oradown.sh  | bash -s -- --cookie=accept-weblogicserver-server --username="${otnusername}" --password="${otnpassword}" http://download.oracle.com/otn/nt/middleware/12c/12213/fmw_12.2.1.3.0_wls_Disk1_1of1.zip
-
 #download jdk from OTN
 echo "Downloading jdk from OTN..."
 curl -s https://raw.githubusercontent.com/typekpb/oradown/master/oradown.sh  | bash -s -- --cookie=accept-weblogicserver-server --username="${otnusername}" --password="${otnpassword}" https://download.oracle.com/otn/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz
+
+validateJDKZipCheckSum $BASE_DIR/jdk-8u131-linux-x64.tar.gz
+
+#Download Weblogic install jar from OTN
+echo "Downloading weblogic install kit from OTN..."
+curl -s https://raw.githubusercontent.com/typekpb/oradown/master/oradown.sh  | bash -s -- --cookie=accept-weblogicserver-server --username="${otnusername}" --password="${otnpassword}" http://download.oracle.com/otn/nt/middleware/12c/12213/fmw_12.2.1.3.0_wls_Disk1_1of1.zip
 
 sudo chown -R $username:$groupname /u01/app
 
@@ -267,6 +285,12 @@ fi
 
 echo "Installing zip unzip wget vnc-server rng-tools"
 sudo yum install -y zip unzip wget vnc-server rng-tools
+
+#Setting up rngd utils
+sudo systemctl enable rngd 
+sudo systemctl status rngd
+sudo systemctl start rngd
+sudo systemctl status rngd
 
 echo "unzipping fmw_12.2.1.3.0_wls_Disk1_1of1.zip..."
 sudo unzip -o $WLS_PATH/fmw_12.2.1.3.0_wls_Disk1_1of1.zip -d $WLS_PATH
