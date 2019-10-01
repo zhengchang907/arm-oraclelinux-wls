@@ -5,3 +5,4 @@ nbactions.xml
 .settings
 *.code-workspace
 target/
+edburns-parameters.json

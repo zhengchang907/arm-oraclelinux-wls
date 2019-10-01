@@ -31,11 +31,11 @@ So, when this template is run, user will be required to accept the <a href="http
 
 **Command line**
 
-*#use this command when you need to create a new resource group for your deployment*
+```
+az group create --name &lt;resource-group-name&gt; --location &lt;resource-group-location&gt;
 
-*az group create --name &lt;resource-group-name&gt; --location &lt;resource-group-location&gt;
-
-*az group deployment create --resource-group &lt;resource-group-name&gt; --template-file mainTemplate.json*
+az group deployment create --resource-group &lt;resource-group-name&gt; --template-file mainTemplate.json  --parameters @parametersFile.json
+```
 
 If you are new to Azure virtual machines, see:
 
