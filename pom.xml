@@ -52,6 +52,8 @@
     <properties>
       <artifactsLocationBase>https://raw.githubusercontent.com/wls-eng</artifactsLocationBase>
     </properties>
+
+    <!-- mvn process-resources -->
     
     <modules>
         <module>parent</module>

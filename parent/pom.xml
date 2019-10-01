@@ -35,6 +35,7 @@
     
     <properties>
       <artifactsLocationBase>https://raw.githubusercontent.com/wls-eng</artifactsLocationBase>
+      <git.tag>master</git.tag>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -52,7 +53,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/arm</outputDirectory>
+                            <outputDirectory>${project.build.directory}/arm</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/main/arm</directory>
@@ -62,10 +63,40 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>            
+            </plugin>
+
         </plugins>
 
     </build>
+
+    <profiles>
+      <profile>
+        <id>template-validation-tests</id>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>exec-maven-plugin</artifactId>
+              <version>1.6.0</version>
+              <executions>
+                <execution>
+                  <id>test</id>
+                  <phase>test</phase>
+                  <goals>
+                    <goal>exec</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <configuration>
+                <workingDirectory>${basedir}/../target/azure-quickstart-templates/test/template-validation-tests</workingDirectory>
+                <executable>/usr/bin/npm</executable>
+                <commandlineArgs>--folder=${project.build.directory}/arm run all</commandlineArgs>
+              </configuration>
+            </plugin>  
+          </plugins>
+        </build>
+      </profile>
+    </profiles>
 
     <licenses>
         <license>
