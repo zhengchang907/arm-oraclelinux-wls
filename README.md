@@ -66,7 +66,7 @@ out in the expected place, and the necessary npm and mocha framework installed.
 
 3. Change directory to the cloned `target/azure-quickstart-templates/test/template-validation-tests` directory.
 
-* Run `npm install`.  This will install mocha within the directory from
+4. Run `npm install`.  This will install mocha within the directory from
   the preceding step.
 
 <h4>Running the tests</h4>
