@@ -1,21 +1,6 @@
 # arm-oraclelinux-wls
 # Simple deployment of a Oracle Linux VM with Weblogic Server pre-installed
 
-<table border="0">
-<tr border="0">
-    <td>
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwls-eng%2Farm-oraclelinux-wls%2Fmaster%2Folvmdeploy.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
-    </td>
-    <td>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fwls-eng%2Farm-oraclelinux-wls%2Fmaster%2Folvmdeploy.json" target="_blank">
-    <img src="http://armviz.io/visualizebutton.png"/>
-</a>
-    </td>
-  </tr>
-</table>    
-
 This template allows us to deploy a simple Oracle Linux VM with Weblogic Server (12.2.1.3.0) pre-installed. 
 This template deploy by default, an A3 size VM in the resource group location and return the fully qualified domain name of the VM.
 
@@ -25,13 +10,24 @@ So, when this template is run, user will be required to accept the <a href="http
 
 <h3>Using the template</h3>
 
+<h4>Perform string substitution to generate the necessary artifacts for deployment or uploading to the Azure Cloud Partner Portal</h4>
+
+* Install Apache Maven.  This project uses Apache Maven to do simple
+  string substitution for several required parameters in the templates.
+  
+* From the top level run `mvn clean install`.
+
+* The templates end up in `arm-oraclelinux-wls/arm-oraclelinux-wls/target/arm`.  Change to that directory to run the templates.
+
+<h4>Once you have performed the string substitution, you can deploy the template via the command line</h4>
+
 **PowerShell** 
 
 *#use this command when you need to create a new resource group for your deployment*
 
 *New-AzResourceGroup -Name &lt;resource-group-name&gt; -Location &lt;resource-group-location&gt; 
 
-*New-AzResourceGroupDeployment -ResourceGroupName &lt;resource-group-name&gt; -TemplateUri https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls/master/olvmdeploy.json*
+*New-AzResourceGroupDeployment -ResourceGroupName &lt;resource-group-name&gt; -TemplateFile mainTemplate.json*
 
 **Command line**
 
@@ -39,7 +35,7 @@ So, when this template is run, user will be required to accept the <a href="http
 
 *az group create --name &lt;resource-group-name&gt; --location &lt;resource-group-location&gt;
 
-*az group deployment create --resource-group &lt;resource-group-name&gt; --template-uri https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls/master/olvmdeploy.json*
+*az group deployment create --resource-group &lt;resource-group-name&gt; --template-file mainTemplate.json*
 
 If you are new to Azure virtual machines, see:
 
@@ -52,3 +48,36 @@ If you are new to Azure virtual machines, see:
 If you are new to template deployment, see:
 
 [Azure Resource Manager documentation](https://docs.microsoft.com/azure/azure-resource-manager/)
+
+
+<h3>Running the tests</h3>
+
+Microsoft provides template validation tests in the Git repo for [azure-quickstart-templates](https://github.com/Azure/azure-quickstart-templates/tree/master/test/template-validation-tests).  This project has maven configuration to run those tests against the ARM template.  This is useful when building the template as part of a CI/CD pipeline.
+
+<h4>Preconditions</h4>
+
+The environment running the tests must have the git repo for 
+[Azure Quickstart Templates)[https://github.com/Azure/azure-quickstart-templates] checked
+out in the expected place, and the necessary npm and mocha framework installed.
+
+1. Make it so the environment that runs `mvn` is able to execute the `/usr/bin/npm` command.
+
+2. Git clone the [Azure Quickstart Templates)[https://github.com/Azure/azure-quickstart-templates] into the top level `target` directory.
+
+3. Change directory to the cloned `target/azure-quickstart-templates/test/template-validation-tests` directory.
+
+* Run `npm install`.  This will install mocha within the directory from
+  the preceding step.
+
+<h4>Running the tests</h4>
+
+1. run `mvn install` in the top level directory.  **Do not run `mvn
+   clean` as this will delete the directory from step 3 above**
+   
+2. Change to `arm-oraclelinux-wls` and run `mvn -Dgit.repo=edburns -Ptemplate-validation-tests install`
+
+3. The template validation tests should run.  You must see no `failing`
+   tests and some large number of passing tests: `63 passing (85ms)`.
+   
+4. The zip file to upload to the Cloud Partner Portal is located in the
+   target directory.

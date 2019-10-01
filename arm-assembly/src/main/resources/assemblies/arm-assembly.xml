@@ -11,8 +11,10 @@
     <fileSet>
       <directory>${project.build.directory}/arm</directory>
       <outputDirectory>/</outputDirectory>
+      <!-- we must include only these two files in the zip that we upload to Marketplace -->
       <includes>
-        <include>*.json</include>
+        <include>createUiDefinition.json</include>
+        <include>mainTemplate.json</include>
       </includes>
     </fileSet>
   </fileSets>
