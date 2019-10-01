@@ -5,18 +5,6 @@
     "parameters": {
         "basics": [
             {
-                "name": "wlsDomainName",
-                "type": "Microsoft.Common.TextBox",
-                "label": "WebLogic Domain Name",
-                "toolTip": "The name of the WebLogic Domain to create.",
-                "defaultValue": "clusterDomain",
-                "constraints": {
-                    "required": true,
-                    "regex": "^[a-z0-9A-Z]{3,79}$",
-                    "validationMessage": "The Domain Name must be between 3 and 79 characters long and contain letters, numbers only."
-                }
-            },
-            {
                 "name": "dnsLabelPrefix",
                 "type": "Microsoft.Common.TextBox",
                 "label": "DNS Label Prefix",
@@ -27,31 +15,6 @@
                     "regex": "^[a-z0-9A-Z]{3,79}$",
                     "validationMessage": "The prefix must be between 3 and 79 characters long and contain letters, numbers only."
                 }
-            },
-            {
-                "name": "managedServerPrefix",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Managed Server Prefix",
-                "toolTip": "The string to prepend to the name of the managed server.",
-                "defaultValue": "msp",
-                "constraints": {
-                    "required": true,
-                    "regex": "^[a-z0-9A-Z]{3,79}$",
-                    "validationMessage": "The prefix must be between 3 and 79 characters long and contain letters, numbers only."
-                }
-            },
-            {
-                "name": "numberOfInstances",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Number of VMs",
-                "defaultValue": "4",
-                "toolTip": "The number of VMs to create, with one WebLogic node per VM",
-                "constraints": {
-                    "required": true,
-                    "regex": "^(2|3|4|5)$",
-                    "validationMessage": "Number of VMs to deploy, limit 5 since this offer is using a single storage account."
-                },
-                "visible": true
             }
         ],
         "steps": [
@@ -159,37 +122,6 @@
                           "hideConfirmation": true
                         },
                         "visible": true
-                      },
-                      {
-                        "name": "wlsUserName",
-                        "type": "Microsoft.Common.TextBox",
-                        "label": "Username for WebLogic Administrator",
-                        "defaultValue": "weblogic",
-                        "toolTip": "Use only allowed characters",
-                        "constraints": {
-                          "required": true,
-                          "regex": "^[a-z0-9A-Z]{1,30}$",
-                          "validationMessage": "The value must be 1-30 characters long and must only contain letters and numbers."
-                        },
-                        "visible": true
-                    },
-                    {
-                        "name": "wlsPassword",
-                        "type": "Microsoft.Common.PasswordBox",
-                        "label": {
-                          "password": "Password for WebLogic Administrator",
-                          "confirmPassword": "Confirm password"
-                        },
-                        "toolTip": "",
-                        "constraints": {
-                          "required": true,
-                          "regex": "",
-                          "validationMessage": ""
-                        },
-                        "options": {
-                          "hideConfirmation": true
-                        },
-                        "visible": true
                       }
 
                 ]
@@ -202,14 +134,9 @@
             "adminPasswordOrKey": "[steps('Credentials').adminPasswordOrKey]",
             "adminUsername": "[steps('Credentials').adminUsername]",
             "dnsLabelPrefix": "[basics('dnsLabelPrefix')]", 
-            "managedServerPrefix": "[basics('managedServerPrefix')]", 
-            "numberOfInstances": "[int(basics('numberOfInstances'))]",
             "otnAccountPassword": "[steps('Credentials').otnAccountPassword]",
             "otnAccountUsername": "[steps('Credentials').otnAccountUsername]",
             "vmSizeSelect": "[steps('VirtualMachineConfig').vmSizeSelect]",
-            "wlsDomainName": "[basics('wlsDomainName')]",
-            "wlsPassword": "[steps('Credentials').wlsPassword]",
-            "wlsUserName": "[steps('Credentials').wlsUserName]",
             "Location": "[location()]"
         }
     }

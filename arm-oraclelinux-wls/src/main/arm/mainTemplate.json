@@ -266,7 +266,7 @@
             "autoUpgradeMinorVersion":true,
             "settings":{
                     "fileUris": [
-            "uri(parameters('_artifactsLocation'), installWeblogic.sh)"
+            "concat(uri(parameters('_artifactsLocation'), installWeblogic.sh), parameters('_artifactsLocationSasToken'))"
             ],
               "commandToExecute": "[concat('sh installWeblogic.sh',' ',parameters('acceptOTNLicenseAgreement'),' ',parameters('otnAccountUsername'),' ',parameters('otnAccountPassword'))]"
             }
