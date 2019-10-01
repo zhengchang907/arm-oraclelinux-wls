@@ -37,6 +37,12 @@ az group create --name &lt;resource-group-name&gt; --location &lt;resource-group
 az group deployment create --resource-group &lt;resource-group-name&gt; --template-file mainTemplate.json  --parameters @parametersFile.json
 ```
 
+For example:
+
+```
+az group deployment create --resource-group 20191001-01-my-rg --parameters @my-parameters.json --template-file arm-oraclelinux-wls/target/arm/mainTemplate.json
+```
+
 If you are new to Azure virtual machines, see:
 
 - [Azure Virtual Machines](https://azure.microsoft.com/services/virtual-machines/).

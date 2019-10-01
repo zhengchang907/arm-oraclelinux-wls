@@ -7,7 +7,7 @@
                "metadata": {
                        "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
                },
-               "defaultValue": "${artifactsLocationBase}/${project.artifactId}/${git.tag}/arm-oraclelinux-wls/src/main/scripts"
+               "defaultValue": "${artifactsLocationBase}/${project.artifactId}/${git.tag}/${project.artifactId}/src/main/scripts"
        },
        "_artifactsLocationSasToken": {
            "type": "securestring",
@@ -254,7 +254,7 @@
             "autoUpgradeMinorVersion":true,
             "settings":{
                     "fileUris": [
-            "concat(uri(parameters('_artifactsLocation'), installWeblogic.sh), parameters('_artifactsLocationSasToken'))"
+            "[uri(parameters('_artifactsLocation'), concat('installWeblogic.sh', parameters('_artifactsLocationSasToken')))]"
             ],
               "commandToExecute": "[concat('sh installWeblogic.sh',' ',parameters('acceptOTNLicenseAgreement'),' ',parameters('otnAccountUsername'),' ',parameters('otnAccountPassword'))]"
             }
