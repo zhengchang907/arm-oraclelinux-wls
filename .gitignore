@@ -1,0 +1,7 @@
+/parent/target/
+/arm-oraclelinux-wls/target/
+nbactions.xml
+.project
+.settings
+*.code-workspace
+target/
