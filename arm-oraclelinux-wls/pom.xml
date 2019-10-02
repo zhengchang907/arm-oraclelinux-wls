@@ -26,12 +26,12 @@
 
     <groupId>com.oracle.weblogic.azure</groupId>
     <artifactId>arm-oraclelinux-wls</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     
     <parent>
         <groupId>com.oracle.weblogic.azure</groupId>
         <artifactId>arm-oraclelinux-wls-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath></relativePath>
     </parent>
     
@@ -55,7 +55,7 @@
             <dependency>
               <groupId>com.oracle.weblogic.azure</groupId>
               <artifactId>arm-assembly</artifactId>
-              <version>1.0.0-SNAPSHOT</version>
+              <version>1.0.0</version>
             </dependency>
           </dependencies>
           <executions>
