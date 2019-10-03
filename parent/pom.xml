@@ -27,7 +27,7 @@
     <groupId>com.oracle.weblogic.azure</groupId>
     <artifactId>arm-oraclelinux-wls-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>${project.artifactId}</name>
     <description>
         
@@ -38,6 +38,7 @@
       <git.repo>wls-eng</git.repo>
       <artifactsLocationBase>https://raw.githubusercontent.com/${git.repo}</artifactsLocationBase>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <arm.assembly.version>1.0.0</arm.assembly.version>
     </properties>
 
     <build>
