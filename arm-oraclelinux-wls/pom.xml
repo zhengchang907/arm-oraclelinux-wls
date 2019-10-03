@@ -29,7 +29,7 @@
     <version>1.0.1</version>
     
     <parent>
-        <groupId>com.oracle.weblogic.azure</groupId>
+        <groupId>com.oracle.weblogic.azure.parent</groupId>
         <artifactId>arm-oraclelinux-wls-parent</artifactId>
         <version>1.0.1</version>
         <relativePath></relativePath>
