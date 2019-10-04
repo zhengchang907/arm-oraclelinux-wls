@@ -55,6 +55,7 @@ If you are new to template deployment, see:
 
 [Azure Resource Manager documentation](https://docs.microsoft.com/azure/azure-resource-manager/)
 
+## Considerations for CI/CD
 
 <h3>Running the tests</h3>
 
@@ -87,3 +88,9 @@ out in the expected place, and the necessary npm and mocha framework installed.
    
 4. The zip file to upload to the Cloud Partner Portal is located in the
    target directory.
+
+## Updating the Versions
+
+```
+mvn versions:set -DnewVersion=1.0.1 -DoldVersion=* -DgroupId=com.oracle.weblogic.azure -DartifactId=*
+```

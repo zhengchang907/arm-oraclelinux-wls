@@ -6,3 +6,4 @@ nbactions.xml
 *.code-workspace
 target/
 edburns-parameters.json
+pom.xml.versionsBackup
