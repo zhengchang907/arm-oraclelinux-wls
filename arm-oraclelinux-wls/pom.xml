@@ -26,7 +26,7 @@
 
     <groupId>com.oracle.weblogic.azure</groupId>
     <artifactId>arm-oraclelinux-wls</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     
     <parent>
         <groupId>com.oracle.weblogic.azure.parent</groupId>
@@ -39,7 +39,7 @@
     <name>arm-oraclelinux-wls</name>
 
     <properties>
-      <tracking.pid>pid-9f324482-0576-5963-a76c-af77f47b10b1</tracking.pid>
+      <tracking.pid>pid-b446fe15-5d43-5549-858d-4775741cd0ba</tracking.pid>
     </properties>
     
     <description>
