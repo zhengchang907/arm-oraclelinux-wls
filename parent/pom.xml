@@ -67,7 +67,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
 
     </build>
@@ -77,6 +76,32 @@
         <id>template-validation-tests</id>
         <build>
           <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <version>3.1.1</version>
+              <dependencies>
+                <dependency>
+                  <groupId>com.oracle.weblogic.azure.assembly</groupId>
+                  <artifactId>arm-assembly</artifactId>
+                  <version>[${arm.assembly.version}]</version>
+                </dependency>
+              </dependencies>
+              <executions>
+                <execution>
+                  <id>make-assembly</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>single</goal>
+                  </goals>
+                  <configuration>
+                    <descriptorRefs>
+                      <descriptorRef>arm-assembly</descriptorRef>
+                    </descriptorRefs>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>exec-maven-plugin</artifactId>

@@ -54,8 +54,8 @@
     </properties>
 
     <modules>
-      <module>parent</module>
       <module>arm-assembly</module>
+      <module>parent</module>
       <module>arm-oraclelinux-wls</module>
     </modules>
 
