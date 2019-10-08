@@ -98,7 +98,6 @@
       "vmName":"WebLogicServerVM",
       "vmSize":"[parameters('vmSizeSelect')]",
       "virtualNetworkName":"olvmVNET",
-      "ScriptFolder": "scripts",
       "ScriptFileName": "installWeblogic.sh",
       "linuxConfiguration":{
          "disablePasswordAuthentication":true,
@@ -267,9 +266,9 @@
             "autoUpgradeMinorVersion":true,
             "settings":{
                     "fileUris": [
-            "[uri(parameters('_artifactsLocation'), concat('installWeblogic.sh', parameters('_artifactsLocationSasToken')))]"
+            "[uri(parameters('_artifactsLocation'), concat(variables('ScriptFileName'), parameters('_artifactsLocationSasToken')))]"
             ],
-              "commandToExecute": "[concat('sh installWeblogic.sh',' ',parameters('acceptOTNLicenseAgreement'),' ',parameters('otnAccountUsername'),' ',parameters('otnAccountPassword'))]"
+              "commandToExecute": "[concat('sh',' ',variables('ScriptFileName'),' ',parameters('acceptOTNLicenseAgreement'),' ',parameters('otnAccountUsername'),' ',parameters('otnAccountPassword'))]"
             }
          }
       }

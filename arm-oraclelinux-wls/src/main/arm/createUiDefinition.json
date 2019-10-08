@@ -75,7 +75,7 @@
                           "required": true
                         },
                         "options": {
-                          "hideConfirmation": true
+                          "hideConfirmation": false
                         },
                         "visible": true
                     },
@@ -112,14 +112,14 @@
                           "password": "Password for admin account of VMs",
                           "confirmPassword": "Confirm password"
                         },
-                        "toolTip": "",
+                        "toolTip": "Password for admin account of VMs",
                         "constraints": {
                           "required": true,
                           "regex": "",
                           "validationMessage": ""
                         },
                         "options": {
-                          "hideConfirmation": true
+                          "hideConfirmation": false
                         },
                         "visible": true
                       }

@@ -4,6 +4,100 @@ Content that goes into the "Marketplace" tab of the offer.
 
 See [the Marketplace documentation](https://docs.microsoft.com/en-us/azure/marketplace/cloud-partner-portal/virtual-machine/cpp-marketplace-tab) for details.
 
+## Offer Settings
+
+Offer Id
+
+20191001-arm-oraclelinux-wls
+
+Publisher ID
+
+oracle
+
+Name 
+
+Oracle WebLogic Server 12.2.1.3 Single Node
+
+## SKU Details
+
+SKU ID
+
+20191001-arm-oraclelinux-wls
+
+Title
+
+Oracle WebLogic Server 12.2.1.3 Single Node
+
+Summary
+
+Provisions a Single Node Oracle WebLogic Server
+
+Description
+
+Provisions a Single Node Oracle WebLogic Server on Oracle Linux 7.6
+
+SKU Type
+
+Solution template
+
+Cloud Availability
+
+Public azure
+
+Is this a private SKU
+
+No
+
+## Channel Info
+
+CSP Program Materials
+
+https://www.oracle.com/
+
+Name
+
+Michele Resta
+
+Email address
+
+michele.resta@oracle.com
+
+Phone number
+
+1 (650)506-7000
+
+## Test Drive
+
+No
+
+## Marketplace
+
+Title
+
+Oracle WebLogic Server 12.2.1.3 Single Node
+
+Summary
+
+Provisions a Single Node Oracle WebLogic Server
+
+Long Summary
+
+Create a single VM with WebLogic Admin Only domain pre-configured.
+
+Description
+
+[description.html](description.html)
+
+Offer available to Microsoft CSP Reseller channel? *
+
+No
+
+Marketing identifier weblogic12c-single
+
+Preview Subscription Ids
+
+REDACTED
+
 ## Useful Links
 
 * [Overview](http://www.oracle.com/weblogicserver)
@@ -28,9 +122,21 @@ See [the Marketplace documentation](https://docs.microsoft.com/en-us/azure/marke
 
 * Web
 
+Marketing Artifacts
+
+### Logos
+
+[marketing-artifacts/](marketing-artifacts/)
+
+### Screenshots
+
+[marketing-artifacts/](marketing-artifacts/admin_console_533_324.png)
+
 ## Videos
 
 * [WebLogic on Azure IaaS](https://youtu.be/m7evI4lObcI)
+
+## Lead Management
 
 ## CRM System
 
@@ -40,7 +146,7 @@ See [the Marketplace documentation](https://docs.microsoft.com/en-us/azure/marke
 
 * [Privacy Policy URL](http://www.oracle.com/us/legal/privacy/privacy-policy-078584.html)
 
-* Use Standard Contract: YES
+* Use Standard Contract: NO
 
 * Terms of Use retrieved 2019-10-03 12:34 EDT from http://www.oracle.com/technetwork/licenses/oracle-license-2016066.html 
 
