@@ -59,7 +59,7 @@ If you are new to template deployment, see:
 
 <h3>Running the tests</h3>
 
-Microsoft provides template validation tests in the Git repo for [azure-quickstart-templates](https://github.com/Azure/azure-quickstart-templates/tree/master/test/template-validation-tests).  This project has maven configuration to run those tests against the ARM template.  This is useful when building the template as part of a CI/CD pipeline.
+Microsoft provides template validation tests in the Git repo for [azure-quickstart-templates](https://github.com/Azure/azure-quickstart-templates/tree/master/test/template-tests).  This project has maven configuration to run those tests against the ARM template.  This is useful when building the template as part of a CI/CD pipeline.
 
 <h4>Preconditions</h4>
 
