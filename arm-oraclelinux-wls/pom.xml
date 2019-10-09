@@ -26,12 +26,12 @@
 
     <groupId>com.oracle.weblogic.azure</groupId>
     <artifactId>arm-oraclelinux-wls</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     
     <parent>
         <groupId>com.oracle.weblogic.azure.parent</groupId>
         <artifactId>arm-oraclelinux-wls-parent</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.3</version>
         <relativePath></relativePath>
     </parent>
     
@@ -39,42 +39,11 @@
     <name>arm-oraclelinux-wls</name>
 
     <properties>
-      <tracking.pid>pid-9f324482-0576-5963-a76c-af77f47b10b1</tracking.pid>
+      <tracking.pid>pid-b446fe15-5d43-5549-858d-4775741cd0ba</tracking.pid>
     </properties>
     
     <description>
         
     </description>
-
-    <build>
-      <plugins>
-        <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.1.1</version>
-          <dependencies>
-            <dependency>
-              <groupId>com.oracle.weblogic.azure.assembly</groupId>
-              <artifactId>arm-assembly</artifactId>
-              <version>[${arm.assembly.version}]</version>
-            </dependency>
-          </dependencies>
-          <executions>
-            <execution>
-              <id>make-assembly</id>
-              <phase>package</phase>
-              <goals>
-                <goal>single</goal>
-              </goals>
-              <configuration>
-                <descriptorRefs>
-                  <descriptorRef>arm-assembly</descriptorRef>
-                </descriptorRefs>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </build>
-    
 
 </project>

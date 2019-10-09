@@ -59,22 +59,17 @@ If you are new to template deployment, see:
 
 <h3>Running the tests</h3>
 
-Microsoft provides template validation tests in the Git repo for [azure-quickstart-templates](https://github.com/Azure/azure-quickstart-templates/tree/master/test/template-validation-tests).  This project has maven configuration to run those tests against the ARM template.  This is useful when building the template as part of a CI/CD pipeline.
+Microsoft provides template validation tests in the Git repo for [azure-quickstart-templates](https://github.com/Azure/azure-quickstart-templates/tree/master/test/template-tests).  This project has maven configuration to run those tests against the ARM template.  This is useful when building the template as part of a CI/CD pipeline.
 
 <h4>Preconditions</h4>
 
 The environment running the tests must have the git repo for 
 [Azure Quickstart Templates)[https://github.com/Azure/azure-quickstart-templates] checked
-out in the expected place, and the necessary npm and mocha framework installed.
+out in the expected place, and the necessary powershell software installed
 
-1. Make it so the environment that runs `mvn` is able to execute the `/usr/bin/npm` command.
+1. Make it so the environment that runs `mvn` is able to execute the powershell command.
 
 2. Git clone the [Azure Quickstart Templates)[https://github.com/Azure/azure-quickstart-templates] into the top level `target` directory.
-
-3. Change directory to the cloned `target/azure-quickstart-templates/test/template-validation-tests` directory.
-
-4. Run `npm install`.  This will install mocha within the directory from
-  the preceding step.
 
 <h4>Running the tests</h4>
 
@@ -83,8 +78,8 @@ out in the expected place, and the necessary npm and mocha framework installed.
    
 2. Change to `arm-oraclelinux-wls` and run `mvn -Dgit.repo=edburns -Ptemplate-validation-tests install`
 
-3. The template validation tests should run.  You must see no `failing`
-   tests and some large number of passing tests: `63 passing (85ms)`.
+3. The template validation tests should run.  You must see no failures, signified by lines that start with `[-]`
+   tests and some large number of passing tests: `[+]`.
    
 4. The zip file to upload to the Cloud Partner Portal is located in the
    target directory.

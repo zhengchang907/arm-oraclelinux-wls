@@ -27,7 +27,7 @@
     <groupId>com.oracle.weblogic.azure.parent</groupId>
     <artifactId>arm-oraclelinux-wls-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1</version>
+    <version>1.0.3</version>
     <name>${project.artifactId}</name>
     <description>
         
@@ -39,6 +39,8 @@
       <artifactsLocationBase>https://raw.githubusercontent.com/${git.repo}</artifactsLocationBase>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <arm.assembly.version>1.0.0</arm.assembly.version>
+      <template.validation.tests.directory>${basedir}/../target/azure-quickstart-templates/test/template-tests</template.validation.tests.directory>
+      <test.args>-Test all</test.args>
     </properties>
 
     <build>
@@ -66,7 +68,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
 
     </build>
@@ -76,6 +77,32 @@
         <id>template-validation-tests</id>
         <build>
           <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <version>3.1.1</version>
+              <dependencies>
+                <dependency>
+                  <groupId>com.oracle.weblogic.azure.assembly</groupId>
+                  <artifactId>arm-assembly</artifactId>
+                  <version>[${arm.assembly.version}]</version>
+                </dependency>
+              </dependencies>
+              <executions>
+                <execution>
+                  <id>make-assembly</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>single</goal>
+                  </goals>
+                  <configuration>
+                    <descriptorRefs>
+                      <descriptorRef>arm-assembly</descriptorRef>
+                    </descriptorRefs>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>exec-maven-plugin</artifactId>
@@ -90,9 +117,9 @@
                 </execution>
               </executions>
               <configuration>
-                <workingDirectory>${basedir}/../target/azure-quickstart-templates/test/template-validation-tests</workingDirectory>
-                <executable>/usr/bin/npm</executable>
-                <commandlineArgs>--folder=${project.build.directory}/arm run all</commandlineArgs>
+                <workingDirectory>${template.validation.tests.directory}</workingDirectory>
+                <executable>sh</executable>
+                <commandlineArgs>Test-AzureRMTemplate.sh -TemplatePath ${project.build.directory}/arm ${test.args}</commandlineArgs>
               </configuration>
             </plugin>  
           </plugins>

@@ -27,7 +27,7 @@
     <groupId>com.oracle.weblogic.azure</groupId>
     <artifactId>arm-oraclelinux-wls-root</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <name>${project.artifactId}</name>
     <description>
         
@@ -54,8 +54,8 @@
     </properties>
 
     <modules>
-      <module>parent</module>
       <module>arm-assembly</module>
+      <module>parent</module>
       <module>arm-oraclelinux-wls</module>
     </modules>
 
