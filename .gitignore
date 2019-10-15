@@ -8,3 +8,5 @@ target/
 edburns-parameters.json
 pom.xml.versionsBackup
 _site
+Gemfile*
+assets
