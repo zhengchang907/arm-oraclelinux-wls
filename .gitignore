@@ -7,3 +7,4 @@ nbactions.xml
 target/
 edburns-parameters.json
 pom.xml.versionsBackup
+_site
