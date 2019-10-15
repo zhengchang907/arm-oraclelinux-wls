@@ -45,12 +45,12 @@
             },
             {
                 "name": "Credentials",
-                "label": "Credentials for WebLogic Creation",
+                "label": "Credentials for Cluster Creation",
                 "subLabel": {
-                    "preValidation": "Provide credentials Required for WebLogic Creation",
+                    "preValidation": "Provide credentials Required for Cluster Creation",
                     "postValidation": "Done"
                 },
-                "bladeTitle": "Credentials for WebLogic Creation",
+                "bladeTitle": "Credentials for Cluster Creation",
                 "elements": [
                     {
                         "name": "otnAccountUsername",
