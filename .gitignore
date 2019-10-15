@@ -10,3 +10,4 @@ pom.xml.versionsBackup
 _site
 Gemfile*
 assets
+.sass-cache
