@@ -74,6 +74,12 @@ provisioned, you may SSH into the VM using the credentials you defined
 on the "Credentials" blade during offer creation.  This section
 documents how log in to any of the provisioned VMs via SSH.
 
+** Note ** Depending on the security rules in your Azure subscription,
+you may need to expose port 22, or whitelist the IP from which you are
+initiating the SSH connection.  See [the Azure
+documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/nsg-quickstart-portal)
+for instructions to do this.
+
 1. In [https://portal.azure.com/](https://portal.azure.com/), visit the
    resource group for the offer.  This is the value that you entered in
    the "Basics" blade during offer creation.  
@@ -131,6 +137,23 @@ documents how log in to any of the provisioned VMs via SSH.
    [sudo] password for weblogic:
    [root@WebLogicServerVM ~]#
    ```   
+   
+## Accessing the Admin Console
+
+For offers that start the Admin GUI, the steps in this section describe
+how to access it.
+
+1. Find and provision the appropriate offer as described elswhere [in
+   this document](#finding-and-selecting-an-offer).
+
+2. Follow the steps in [Accessing the VM via
+   SSH](#accessing-the-vms-via-ssh) up to and including copying the DNS
+   name to the clipboard.
+   
+3. Open a new browser tab and visit `http://&lt;dnsname&gt;:7001/console`.
+
+4. Log in with the credentials you defined on the "Credentials" blade
+during offer creation.
 
 ## WebLogic Server Virtual Machine Directory Structure
 
@@ -446,7 +469,7 @@ The script is downloadable from [`{{ site.data.var.oracleDBScriptName }}`]({{ si
   It is easier to run the script directly on the admin VM, so this is
   the recommended approach.
 
-* The {{ site.data.var.oracleDBScriptName }} script requires the
+* The `{{ site.data.var.oracleDBScriptName }}` script requires the
   following arguments, so you must gather values for all of them before
   invoking the script.
 
@@ -461,7 +484,48 @@ The script is downloadable from [`{{ site.data.var.oracleDBScriptName }}`]({{ si
    | `<dsConnectionURL>` | JDBC Connection String for database | `jdbc:oracle:thin:@benqoiz.southeastasia.cloudapp.azure.com:1521/cqo1` |
    | `<dsUser>` | Username of the database | `weblogic` |
    | `<dsPassword>` | Password for the database user | REDACTED | 
-   | `<wlsClusterName>` | Name of the {{ site.data.var.wlsFullBrandName }} cluster.  For cluster based offers, this is currently hard coded to `cluster1` | `cluster1` |
 
+* The Oracle DB VM must be running and accessible via the arguments in
+  the preceding point.
+
+##### Configuring the Datasource
+
+After SSHing into the admin VM and becoming `root`, assuming the
+preconditions have been met, the following commands will fetch and run
+the script.  Please replace argument values as described above.
+   
+```
+export ORACLE_HOME=/u01/app/wls/install/Oracle/Middleware/Oracle_Home
+wget {{ site.data.var.oracleDBScriptDownloadUrl }}
+chmod ugo+x ./datasourceConfig-oracle.sh
+./{{ site.data.var.oracleDBScriptName }} ${ORACLE_HOME} wls1022030-102203rqoheafet-pyhfgreqbznva.eastus.cloudapp.azure.com 7001 weblogic REDACTED testJDBC jdbc:oracle:thin:@benqoiz.southeastasia.cloudapp.azure.com:1521/cqo1 weblogic REDACTED
+```
+
+##### Testing the Datasource
+
+1. Visit the admin console as described in [Accessing the admin
+   console](#accessing-the-admin-console).
+   
+2. In the "Domain Structure" area of the UI, expand "Services".  You
+   should see something similar to this.
+   
+   ![Domain Structure Data Sources]({{ site.url }}/arm-oraclelinux-wls/assets/jdbc-datasources-01.png "Domain Structure Data Sources")
+
+3. Click on the name of the datasource in the table.  For example "testJDBC".
+
+4. Click on "Monitoring" then "Testing".  Then select the radio button
+   of one of the cluster nodes and click "Test Data Source" as shown here.
+
+   ![Domain Structure Data Sources]({{ site.url }}/arm-oraclelinux-wls/assets/jdbc-datasources-02.png "Domain Structure Data Sources")
+   
+5. The status area should show "Test of &lt;datasource name&gt; on
+   server &lt;server name&gt; was successful.
+   
+6. Do this for all the other nodes.
+
+If any of the datasoucres do not return a successful test, see [the
+documentation](https://docs.oracle.com/middleware/12213/wls/INTRO/jdbc.htm#INTRO215)
+and resolve the problem before continuing.
+   
 #### Azure PostgreSQL service
 
