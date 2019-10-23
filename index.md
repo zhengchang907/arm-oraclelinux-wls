@@ -150,7 +150,7 @@ how to access it.
    SSH](#accessing-the-vms-via-ssh) up to and including copying the DNS
    name to the clipboard.
    
-3. Open a new browser tab and visit `http://&lt;dnsname&gt;:7001/console`.
+3. Open a new browser tab and visit `http://<dnsname>:7001/console`.
 
 4. Log in with the credentials you defined on the "Credentials" blade
 during offer creation.
