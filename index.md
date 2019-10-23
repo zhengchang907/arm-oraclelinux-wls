@@ -132,12 +132,6 @@ documents how log in to any of the provisioned VMs via SSH.
    [root@WebLogicServerVM ~]#
    ```   
 
-## Connecting a Database
-
-### Oracle DB VM
-
-### Azure PostgreSQL service
-
 ## WebLogic Server Virtual Machine Directory Structure
 
 The following table shows the Oracle-specific directory structure for
@@ -303,7 +297,7 @@ The Basics blade is exactly the same [as the preceding offer](#weblogic-server-s
 
 The Virtual Machine Settings blade is exactly the same [as the preceding offer](#weblogic-server-single-node-with-no-admin-server).
 
-#### Credentials for Cluster Creation Blade
+#### Credentials for Offer Creation Blade
 
 This blade lets you fill out various credentials necessary to provision
 the VM.
@@ -418,3 +412,56 @@ cluster and start the admin server.
 #### Buy Blade
 
 The buy blade is exactly the same [as the first offer](#weblogic-server-single-node-with-no-admin-server).
+
+### Connecting a Database to a Cluster
+
+For the offers documented here that install {{
+site.data.var.wlsFullBrandName }} clusters, after the offer has been
+provisioned, you may take steps to connect one or more databases, as
+described in this section.  For complete details on connecting databases
+to {{ site.data.var.wlsFullBrandName }}, please see [the release
+notes](https://docs.oracle.com/middleware/12213/wls/NOTES/whatsnew.htm#NOTES155)
+and [the
+documentation](https://docs.oracle.com/middleware/12213/wls/INTRO/jdbc.htm#INTRO215).
+
+#### Oracle DB VM
+
+In this release of the offers, a script is provided to take a
+provisioned offer and configure a JDBC Data Source on it which
+references a previously created Oracle Database VM.  Azure has great
+support for Oracle database, see
+[https://azure.microsoft.com/en-us/solutions/oracle/](https://azure.microsoft.com/en-us/solutions/oracle/).
+
+The script is downloadable from [`{{ site.data.var.oracleDBScriptName }}`]({{ site.data.var.oracleDBScriptDownloadUrl }}).
+
+##### Preconditions for running the script
+
+* The script needs access to the `ORACLE_HOME` of a {{
+  site.data.var.wlsFullBrandName }} installation.  You can either run
+  the script from the admin VM by putting the script on the admin vm
+  host and then [accessing the VM via SSH](#accessing-the-vms-via-ssh),
+  or you can install {{ site.data.var.wlsFullBrandName }} locally as
+  described in [in the Oracle
+  documentation](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.3/wlsig/installing-weblogic-server-developers.html#GUID-207CA334-FEDD-4D35-9DCA-357E5FDFEB2E).
+  It is easier to run the script directly on the admin VM, so this is
+  the recommended approach.
+
+* The {{ site.data.var.oracleDBScriptName }} script requires the
+  following arguments, so you must gather values for all of them before
+  invoking the script.
+
+   | Argument name | Purpose | Example value |
+   |---------------|---------|---------------|
+   | `<oracleHome>`| Oracle home directory | /u01/app/wls/install/Oracle/Middleware/Oracle_Home |
+   | `<wlsAdminHost>` | Fully qualified hostname or IP of the running admin server | `wls1022030-102203rqoheafet-pyhfgreqbznva.eastus.cloudapp.azure.com` |
+   | `<wlsAdminPort>` | Admin port, for T3 connection | `7001` |
+   | `<wlsUserName>` | Username of WebLogic Administrator, as specified in the [credentials blade](#weblogic-server-single-node-with-admin-server) | `weblogic` |
+   | `<wlsPassword>` | Password for WebLogic Administrator | REDACTED | 
+   | `<jdbcDataSourceName>` | JDBC Datasource Name | `testJDBC` | 
+   | `<dsConnectionURL>` | JDBC Connection String for database | `jdbc:oracle:thin:@benqoiz.southeastasia.cloudapp.azure.com:1521/cqo1` |
+   | `<dsUser>` | Username of the database | `weblogic` |
+   | `<dsPassword>` | Password for the database user | REDACTED | 
+   | `<wlsClusterName>` | Name of the {{ site.data.var.wlsFullBrandName }} cluster.  For cluster based offers, this is currently hard coded to `cluster1` | `cluster1` |
+
+#### Azure PostgreSQL service
+
