@@ -104,7 +104,7 @@ REDACTED
 
 * [Learn more](http://www.oracle.com/technetwork/middleware/weblogic/learnmore/index.html)
 
-* [Documentation](http://www.oracle.com/technetwork/middleware/weblogic/community/index.html)
+* [Documentation](https://wls-eng.github.io/arm-oraclelinux-wls/)
 
 * [Official Blog](https://blogs.oracle.com/weblogicserver/)
 
