@@ -7,7 +7,7 @@ export jdbcDataSourceName=$6
 export dsConnectionURL=$7
 export dsUser=$8
 export dsPassword=$9
-export wlsClusterName=${10}
+export wlsClusterName=${10-cluster1}
 export wlsAdminURL=$wlsAdminHost:$wlsAdminPort
 export hostName=`hostname`
 
