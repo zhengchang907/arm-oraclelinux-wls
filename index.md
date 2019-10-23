@@ -132,7 +132,11 @@ documents how log in to any of the provisioned VMs via SSH.
    [root@WebLogicServerVM ~]#
    ```   
 
+## Connecting a Database
 
+### Oracle DB VM
+
+### Azure PostgreSQL service
 
 ## WebLogic Server Virtual Machine Directory Structure
 
