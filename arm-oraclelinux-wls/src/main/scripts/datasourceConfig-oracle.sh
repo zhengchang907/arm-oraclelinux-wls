@@ -128,7 +128,7 @@ disconnect()
 EOF
 }
 
-if [ $# -ne 10 ]
+if [ $# -lt 9 ]
 then
     usage
     exit 1
