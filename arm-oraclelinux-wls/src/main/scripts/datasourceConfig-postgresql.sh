@@ -106,7 +106,7 @@ try:
   cmo.setDatasourceType('GENERIC')
   cd('/JDBCSystemResources/$jdbcDataSourceName/JDBCResource/$jdbcDataSourceName/JDBCDriverParams/$jdbcDataSourceName')
   cmo.setUrl('$dsConnectionURL')
-  cmo.setDriverName('oracle.jdbc.OracleDriver')
+  cmo.setDriverName('org.postgresql.Driver')
   cmo.setPassword('$dsPassword')
   cd('/JDBCSystemResources/$jdbcDataSourceName/JDBCResource/$jdbcDataSourceName/JDBCConnectionPoolParams/$jdbcDataSourceName')
   cmo.setTestTableName('SQL ISVALID\r\n\r\n\r\n\r\n')
