@@ -8,3 +8,5 @@ versionOr: 12.1.2.3
 oracleLinuxVersion: 7.6
 jdkVersion: Oracle JDK 8u131
 jdkVersionNumber: jdk1.8.0_131
+oracleDBScriptName: datasourceConfig-oracle.sh
+oracleDBScriptDownloadUrl: https://raw.githubusercontent.com/edburns/arm-oraclelinux-wls/master/arm-oraclelinux-wls/src/main/scripts/datasourceConfig-oracle.sh
