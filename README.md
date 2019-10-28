@@ -64,12 +64,12 @@ Microsoft provides template validation tests in the Git repo for [azure-quicksta
 <h4>Preconditions</h4>
 
 The environment running the tests must have the git repo for 
-[Azure Quickstart Templates)[https://github.com/Azure/azure-quickstart-templates] checked
+[Azure Quickstart Templates](https://github.com/Azure/azure-quickstart-templates) checked
 out in the expected place, and the necessary powershell software installed
 
 1. Make it so the environment that runs `mvn` is able to execute the powershell command.
 
-2. Git clone the [Azure Quickstart Templates)[https://github.com/Azure/azure-quickstart-templates] into the top level `target` directory.
+2. Git clone the [Azure Quickstart Templates](https://github.com/Azure/azure-quickstart-templates) into the same directory where this repo is/will be located.
 
 <h4>Running the tests</h4>
 

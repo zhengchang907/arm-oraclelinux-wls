@@ -39,7 +39,7 @@
       <artifactsLocationBase>https://raw.githubusercontent.com/${git.repo}</artifactsLocationBase>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <arm.assembly.version>1.0.0</arm.assembly.version>
-      <template.validation.tests.directory>${basedir}/../target/azure-quickstart-templates/test/template-tests</template.validation.tests.directory>
+      <template.validation.tests.directory>${basedir}/../../azure-quickstart-templates/test/arm-ttk</template.validation.tests.directory>
       <test.args>-Test all</test.args>
     </properties>
 
@@ -119,7 +119,7 @@
               <configuration>
                 <workingDirectory>${template.validation.tests.directory}</workingDirectory>
                 <executable>sh</executable>
-                <commandlineArgs>Test-AzureRMTemplate.sh -TemplatePath ${project.build.directory}/arm ${test.args}</commandlineArgs>
+                <commandlineArgs>Test-AzTemplate.sh -TemplatePath ${project.build.directory}/arm ${test.args}</commandlineArgs>
               </configuration>
             </plugin>  
           </plugins>
