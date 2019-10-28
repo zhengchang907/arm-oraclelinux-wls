@@ -447,9 +447,7 @@ notes](https://docs.oracle.com/middleware/12213/wls/NOTES/whatsnew.htm#NOTES155)
 and [the
 documentation](https://docs.oracle.com/middleware/12213/wls/INTRO/jdbc.htm#INTRO215).
 
-#### Oracle DB VM
-
-In this release of the offers, a script is provided to take a
+In this release of the offers, a scripts are provided to take a
 provisioned offer and configure a JDBC Data Source on it which
 references a previously created Oracle Database VM.  Azure has great
 support for Oracle database, see
