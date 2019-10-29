@@ -448,7 +448,7 @@ documentation](https://docs.oracle.com/middleware/12213/wls/INTRO/jdbc.htm#INTRO
 Azure has great support for Oracle database, see
 [https://azure.microsoft.com/en-us/solutions/oracle/](https://azure.microsoft.com/en-us/solutions/oracle/).
 In addition to Oracle, Azure supports many other databases, including
-PostgreSQL and Azure SQL Server.  
+[PostgreSQL](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-portal) and [Azure SQL Server](https://docs.microsoft.com/azure/sql-database/sql-database-get-started-portal).
 
 In this release of the offers, scripts are provided to take a
 provisioned offer and configure a JDBC Data Source on it which
@@ -506,7 +506,85 @@ chmod ugo+x ./datasourceConfig*.sh
 ./{{ site.data.var.wildcardDBScriptName }} ${ORACLE_HOME} wls1022030-102203rqoheafet-pyhfgreqbznva.eastus.cloudapp.azure.com 7001 weblogic REDACTED testJDBC jdbc:oracle:thin:@benqoiz.southeastasia.cloudapp.azure.com:1521/cqo1 weblogic REDACTED
 ```
 
+##### Obtaining the JDBC Connection Strings
+
+The most complicated argument for the `datasourceConfig` script is the
+`dsConnectionURL`.  This section aims to simplify deriving the value for
+this argument for each of the databases supported by the
+`datasourceConfig` scripts.
+
+* Oracle
+
+   The Oracle JDBC string is the simplest.  In most cases, the only
+   values that change from deployment to deployment are the hostname and
+   the database name, as shown here.
+   
+   ```
+   jdbc:oracle:thin:@HOSTNAME:1521/DATABASENAME
+   ```
+   
+   For example,
+   
+   ```
+   jdbc:oracle:thin:@benqoiz.southeastasia.cloudapp.azure.com:1521/pdb1
+   ```
+
+* Azure Database for PostgreSQL
+
+   Deploy an Azure Database PostgreSQL as described [in the
+   documentation](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-portal).
+   Then, visit the service instance in `portal.azure.com` and visit the
+   `Connection strings` area in the settings.
+   
+   ![Connection Strings]({{ site.url }}/arm-oraclelinux-wls/assets/jdbc-datasources-03-postgresql-01.png "Connection Strings")
+   
+   Locate the "JDBC" section and click the "copy" icon on the right.
+   This should cause something like the following to be copied to your
+   clipboard.
+
+   ```
+   jdbc:postgresql://20191015cbfgterfdy.postgres.database.azure.com:5432/{your_database}?user=jroybtvp@20191015cbfgterfdy&password={your_password}&sslmode=require
+   ```
+   
+   When passing this value to the `datasourceConfig-postgres.sh` strip
+   out the `user` and `password` name=value pairs and position them as
+   arguments to the script.  In the above example, the `dsConnectionURL`
+   would be similar to this.
+   
+   ```
+   jdbc:postgresql://20191015cbfgterfdy.postgres.database.azure.com:5432/{your_database}?sslmode=require
+   ```
+   
+* Azure SQL Server
+
+   Deploy Azure SQL Server as described in [the
+   documentation](https://docs.microsoft.com/azure/sql-database/sql-database-get-started-portal).
+   Then, visit the service instance in `portal.azure.com` and visit the
+   `Connection Strings` area in the settings.
+   
+   ![Connection Strings]({{ site.url }}/arm-oraclelinux-wls/assets/jdbc-datasources-04-azuresql-01.png "Connection Strings")
+   
+   Click the "JDBC" tab and click the "copy" icon on the right.
+   This should cause something like the following to be copied to your
+   clipboard.
+   
+   ```
+   jdbc:sqlserver://rwo102804.database.windows.net:1433;database=rwo102804;user=jroybtvp@rwo102804;password={your_password_here};encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+   ```
+
+   When passing this value to the `datasourceConfig-azuresql.sh` strip
+   out the `user` and `password` name=value pairs and position them as
+   arguments to the script.  In the above example, the `dsConnectionURL`
+   would be similar to this.
+   
+   ```
+   jdbc:sqlserver://rwo102804.database.windows.net:1433;database={your_database};encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+   ```
+
 ##### Testing the Datasource
+
+The process for validating the database connection is the same
+regardless which database is used.
 
 1. Visit the admin console as described in [Accessing the admin
    console](#accessing-the-admin-console).
