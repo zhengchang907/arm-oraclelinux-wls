@@ -15,9 +15,12 @@ So, when this template is run, user will be required to accept the <a href="http
 * Install Apache Maven.  This project uses Apache Maven to do simple
   string substitution for several required parameters in the templates.
   
+* Git clone [Azure Java EE IaaS](https://github.com/edburns/azure-javaee-iaas) and `mvn clean
+  install` to get the some required dependencies into your local maven repo.
+  
 * From the top level run `mvn clean install`.
 
-* The templates end up in `arm-oraclelinux-wls/arm-oraclelinux-wls/target/arm`.  Change to that directory to run the templates.
+* The templates end up in `arm-oraclelinux-wls/target/arm`.  Change to that directory to run the templates.
 
 <h4>Once you have performed the string substitution, you can deploy the template via the command line</h4>
 
@@ -59,7 +62,7 @@ If you are new to template deployment, see:
 
 <h3>Running the tests</h3>
 
-Microsoft provides template validation tests in the Git repo for [azure-quickstart-templates](https://github.com/Azure/azure-quickstart-templates/tree/master/test/template-tests).  This project has maven configuration to run those tests against the ARM template.  This is useful when building the template as part of a CI/CD pipeline.
+Microsoft provides template validation tests in the Git repo for Azure-Quickstart-Templates.  This project has maven configuration to run those tests against the ARM template.  This is useful when building the template as part of a CI/CD pipeline.
 
 <h4>Preconditions</h4>
 
@@ -69,7 +72,11 @@ out in the expected place, and the necessary powershell software installed
 
 1. Make it so the environment that runs `mvn` is able to execute the powershell command.
 
-2. Git clone the [Azure Quickstart Templates](https://github.com/Azure/azure-quickstart-templates) into the same directory where this repo is/will be located.
+2. Git clone the Azure Quickstart Templates into the same directory
+   where this repo is/will be located.  In other words, the test repo is
+   a sibling of this repo.  **Due to issues with the tests at the time of
+   release, you must check out the tag `2019-10-29-01` of [this
+   fork](https://github.com/edburns/azure-quickstart-templates/tree/2019-10-29-01).**
 
 <h4>Running the tests</h4>
 
