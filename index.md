@@ -438,26 +438,29 @@ The buy blade is exactly the same [as the first offer](#weblogic-server-single-n
 
 ### Connecting a Database to a Cluster
 
-For the offers documented here that install {{
-site.data.var.wlsFullBrandName }} clusters, after the offer has been
-provisioned, you may take steps to connect one or more databases, as
-described in this section.  For complete details on connecting databases
-to {{ site.data.var.wlsFullBrandName }}, please see [the release
+After the offer has been provisioned, you may take steps to connect one
+or more databases.  For complete details on connecting databases to {{
+site.data.var.wlsFullBrandName }}, please see [the release
 notes](https://docs.oracle.com/middleware/12213/wls/NOTES/whatsnew.htm#NOTES155)
 and [the
 documentation](https://docs.oracle.com/middleware/12213/wls/INTRO/jdbc.htm#INTRO215).
 
-#### Oracle DB VM
-
-In this release of the offers, a script is provided to take a
-provisioned offer and configure a JDBC Data Source on it which
-references a previously created Oracle Database VM.  Azure has great
-support for Oracle database, see
+Azure has great support for Oracle database, see
 [https://azure.microsoft.com/en-us/solutions/oracle/](https://azure.microsoft.com/en-us/solutions/oracle/).
+In addition to Oracle, Azure supports many other databases, including
+[PostgreSQL](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-portal) and [Azure SQL Server](https://docs.microsoft.com/azure/sql-database/sql-database-get-started-portal).
 
-The script is downloadable from [`{{ site.data.var.oracleDBScriptName }}`]({{ site.data.var.oracleDBScriptDownloadUrl }}).
+In this release of the offers, scripts are provided to take a
+provisioned offer and configure a JDBC Data Source on it which
+references a previously created Database VM.  For databases not
+supported by the following scripts, you must follow the instructions for
+that database.
 
-##### Preconditions for running the script
+* [`{{ site.data.var.oracleDBScriptName }}`]({{ site.data.var.oracleDBScriptDownloadUrl }}).
+* [`{{ site.data.var.postgresqlDBScriptName }}`]({{ site.data.var.postgresqlDBScriptDownloadUrl }}).
+* [`{{ site.data.var.azuresqlDBScriptName }}`]({{ site.data.var.azuresqlDBScriptDownloadUrl }}).
+
+##### Preconditions for running a script
 
 * The script needs access to the `ORACLE_HOME` of a {{
   site.data.var.wlsFullBrandName }} installation.  You can either run
@@ -469,9 +472,8 @@ The script is downloadable from [`{{ site.data.var.oracleDBScriptName }}`]({{ si
   It is easier to run the script directly on the admin VM, so this is
   the recommended approach.
 
-* The `{{ site.data.var.oracleDBScriptName }}` script requires the
-  following arguments, so you must gather values for all of them before
-  invoking the script.
+* Each script requires the following arguments, so you must gather
+  values for all of them before invoking the script.
 
    | Argument name | Purpose | Example value |
    |---------------|---------|---------------|
@@ -485,23 +487,104 @@ The script is downloadable from [`{{ site.data.var.oracleDBScriptName }}`]({{ si
    | `<dsUser>` | Username of the database | `weblogic` |
    | `<dsPassword>` | Password for the database user | REDACTED | 
 
-* The Oracle DB VM must be running and accessible via the arguments in
+* The Database VM must be running and accessible via the arguments in
   the preceding point.
 
 ##### Configuring the Datasource
 
 After SSHing into the admin VM and becoming `root`, assuming the
 preconditions have been met, the following commands will fetch and run
-the script.  Please replace argument values as described above.
+the scripts.  Please replace argument values as described above.
    
 ```
+sudo su -
 export ORACLE_HOME=/u01/app/wls/install/Oracle/Middleware/Oracle_Home
 wget {{ site.data.var.oracleDBScriptDownloadUrl }}
-chmod ugo+x ./datasourceConfig-oracle.sh
-./{{ site.data.var.oracleDBScriptName }} ${ORACLE_HOME} wls1022030-102203rqoheafet-pyhfgreqbznva.eastus.cloudapp.azure.com 7001 weblogic REDACTED testJDBC jdbc:oracle:thin:@benqoiz.southeastasia.cloudapp.azure.com:1521/cqo1 weblogic REDACTED
+wget {{ site.data.var.postgresqlDBScriptDownloadUrl }}
+wget {{ site.data.var.azuresqlDBScriptDownloadUrl }}
+chmod ugo+x ./datasourceConfig*.sh
+./{{ site.data.var.wildcardDBScriptName }} ${ORACLE_HOME} wls1022030-102203rqoheafet-pyhfgreqbznva.eastus.cloudapp.azure.com 7001 weblogic REDACTED testJDBC jdbc:oracle:thin:@benqoiz.southeastasia.cloudapp.azure.com:1521/cqo1 weblogic REDACTED
 ```
 
+##### Obtaining the JDBC Connection Strings
+
+The most complicated argument for the `datasourceConfig` script is the
+`dsConnectionURL`.  This section aims to simplify deriving the value for
+this argument for each of the databases supported by the
+`datasourceConfig` scripts.
+
+* Oracle
+
+   The Oracle JDBC string is the simplest.  In most cases, the only
+   values that change from deployment to deployment are the hostname and
+   the database name, as shown here.
+   
+   ```
+   jdbc:oracle:thin:@HOSTNAME:1521/DATABASENAME
+   ```
+   
+   For example,
+   
+   ```
+   jdbc:oracle:thin:@benqoiz.southeastasia.cloudapp.azure.com:1521/pdb1
+   ```
+
+* Azure Database for PostgreSQL
+
+   Deploy an Azure Database PostgreSQL as described [in the
+   documentation](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-portal).
+   Then, visit the service instance in `portal.azure.com` and visit the
+   `Connection strings` area in the settings.
+   
+   ![Connection Strings]({{ site.url }}/arm-oraclelinux-wls/assets/jdbc-datasources-03-postgresql-01.png "Connection Strings")
+   
+   Locate the "JDBC" section and click the "copy" icon on the right.
+   This should cause something like the following to be copied to your
+   clipboard.
+
+   ```
+   jdbc:postgresql://20191015cbfgterfdy.postgres.database.azure.com:5432/{your_database}?user=jroybtvp@20191015cbfgterfdy&password={your_password}&sslmode=require
+   ```
+   
+   When passing this value to the `datasourceConfig-postgres.sh` strip
+   out the `user` and `password` name=value pairs and position them as
+   arguments to the script.  In the above example, the `dsConnectionURL`
+   would be similar to this.
+   
+   ```
+   jdbc:postgresql://20191015cbfgterfdy.postgres.database.azure.com:5432/{your_database}?sslmode=require
+   ```
+   
+* Azure SQL Server
+
+   Deploy Azure SQL Server as described in [the
+   documentation](https://docs.microsoft.com/azure/sql-database/sql-database-get-started-portal).
+   Then, visit the service instance in `portal.azure.com` and visit the
+   `Connection Strings` area in the settings.
+   
+   ![Connection Strings]({{ site.url }}/arm-oraclelinux-wls/assets/jdbc-datasources-04-azuresql-01.png "Connection Strings")
+   
+   Click the "JDBC" tab and click the "copy" icon on the right.
+   This should cause something like the following to be copied to your
+   clipboard.
+   
+   ```
+   jdbc:sqlserver://rwo102804.database.windows.net:1433;database=rwo102804;user=jroybtvp@rwo102804;password={your_password_here};encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+   ```
+
+   When passing this value to the `datasourceConfig-azuresql.sh` strip
+   out the `user` and `password` name=value pairs and position them as
+   arguments to the script.  In the above example, the `dsConnectionURL`
+   would be similar to this.
+   
+   ```
+   jdbc:sqlserver://rwo102804.database.windows.net:1433;database={your_database};encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+   ```
+
 ##### Testing the Datasource
+
+The process for validating the database connection is the same
+regardless which database is used.
 
 1. Visit the admin console as described in [Accessing the admin
    console](#accessing-the-admin-console).
@@ -526,6 +609,3 @@ chmod ugo+x ./datasourceConfig-oracle.sh
 If any of the datasoucres do not return a successful test, see [the
 documentation](https://docs.oracle.com/middleware/12213/wls/INTRO/jdbc.htm#INTRO215)
 and resolve the problem before continuing.
-   
-#### Azure PostgreSQL service
-
