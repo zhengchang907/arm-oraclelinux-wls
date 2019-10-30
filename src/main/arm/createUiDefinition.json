@@ -84,13 +84,13 @@
                         "label": "Accept OTN License Agreement",
                         "type": "Microsoft.Common.TextBox",
                         "tooltip": "A value of N indicates you do not accept the OTN License Agreement.  In that case the deployment will fail.",
-                        "defaultValue": "Y",
                         "visible": true,
+                        "defaultValue": "Y",
                         "constraints": {
-                            "required": false,
-                            "regex": "^[YN]$",
-                            "validationMessage": "The value must be either Y or N."
-                          }
+                            "required": true,
+                            "regex": "^[Yy]$",
+                            "validationMessage": "The value must be Y/y to proceed with deployment."
+                        }
                       },
                     {
                         "name": "adminUsername",
