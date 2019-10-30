@@ -64,19 +64,19 @@ function validateInput()
 
    if [ -z "$dsConnectionURL" ];
    then
-        echo _stderr "Please provide Oracle Database URL in the format 'jdbc:oracle:thin:@<db host name>:<db port>/<database name>'"
+        echo _stderr "Please provide Azure SQL Database URL in the format 'jdbc:oracle:thin:@<db host name>:<db port>/<database name>'"
         exit 1
    fi
 
    if [ -z "$dsUser" ];
    then
-       echo _stderr "Please provide Oracle Database user name"
+       echo _stderr "Please provide Azure SQL Database user name"
        exit 1
    fi
 
    if [ -z "$dsPassword" ];
    then
-       echo _stderr "Please provide Oracle Database password"
+       echo _stderr "Please provide Azure SQL Database password"
        exit 1
    fi
 
@@ -106,7 +106,7 @@ try:
   cmo.setDatasourceType('GENERIC')
   cd('/JDBCSystemResources/$jdbcDataSourceName/JDBCResource/$jdbcDataSourceName/JDBCDriverParams/$jdbcDataSourceName')
   cmo.setUrl('$dsConnectionURL')
-  cmo.setDriverName('oracle.jdbc.OracleDriver')
+  cmo.setDriverName('com.microsoft.sqlserver.jdbc.SQLServerDriver')
   cmo.setPassword('$dsPassword')
   cd('/JDBCSystemResources/$jdbcDataSourceName/JDBCResource/$jdbcDataSourceName/JDBCConnectionPoolParams/$jdbcDataSourceName')
   cmo.setTestTableName('SQL ISVALID\r\n\r\n\r\n\r\n')
@@ -128,7 +128,7 @@ disconnect()
 EOF
 }
 
-if [ $# -ne 10 ]
+if [ $# -lt 9 ]
 then
     usage
     exit 1
