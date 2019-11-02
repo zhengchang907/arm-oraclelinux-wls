@@ -110,7 +110,7 @@
             ]
          }
       },
-      "linuxOSVersion": "7.6", 
+      "linuxOSVersion": "7.4", 
       "subnetRef":"[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
    },
    "resources":[
