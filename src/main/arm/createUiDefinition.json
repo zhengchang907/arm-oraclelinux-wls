@@ -12,8 +12,8 @@
                 "defaultValue": "wls",
                 "constraints": {
                     "required": true,
-                    "regex": "^[a-z0-9A-Z]{3,79}$",
-                    "validationMessage": "The prefix must be between 3 and 79 characters long and contain letters, numbers only."
+                    "regex": "^[a-z0-9A-Z]{3,10}$",
+                    "validationMessage": "The prefix must be between 3 and 10 characters long and contain letters, numbers only."
                 }
             }
         ],
@@ -59,7 +59,7 @@
                         "toolTip": "The username of a pre-existing OTN account.",
                         "constraints": {
                             "required": true,
-                            "regex": "^.*$",
+                            "regex": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
                             "validationMessage": "The value must be a valid email address"
                         }
                     },
@@ -67,15 +67,15 @@
                         "name": "otnAccountPassword",
                         "type": "Microsoft.Common.PasswordBox",
                         "label": {
-                          "password": "Password for OTN Account",
-                          "confirmPassword": "Confirm password"
+                            "password": "Password for OTN Account",
+                            "confirmPassword": "Confirm password"
                         },
                         "toolTip": "Password for OTN Account",
                         "constraints": {
-                          "required": true
+                            "required": true
                         },
                         "options": {
-                          "hideConfirmation": false
+                            "hideConfirmation": false
                         },
                         "visible": true
                     },
@@ -91,7 +91,7 @@
                             "regex": "^[Yy]$",
                             "validationMessage": "The value must be Y/y to proceed with deployment."
                         }
-                      },
+                    },
                     {
                         "name": "adminUsername",
                         "type": "Microsoft.Common.TextBox",
@@ -99,9 +99,9 @@
                         "defaultValue": "weblogic",
                         "toolTip": "Use only allowed characters",
                         "constraints": {
-                          "required": true,
-                          "regex": "^[a-z0-9A-Z]{1,30}$",
-                          "validationMessage": "The value must be 1-30 characters long and must only contain letters and numbers."
+                            "required": true,
+                            "regex": "^[a-z0-9A-Z]{1,30}$",
+                            "validationMessage": "The value must be 1-30 characters long and must only contain letters and numbers."
                         },
                         "visible": true
                     },
@@ -109,31 +109,28 @@
                         "name": "adminPasswordOrKey",
                         "type": "Microsoft.Common.PasswordBox",
                         "label": {
-                          "password": "Password for admin account of VMs",
-                          "confirmPassword": "Confirm password"
+                            "password": "Password for admin account of VMs",
+                            "confirmPassword": "Confirm password"
                         },
                         "toolTip": "Password for admin account of VMs",
                         "constraints": {
-                          "required": true,
-                          "regex": "",
-                          "validationMessage": ""
+                            "required": true,
+                            "regex": "^((?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])|(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&*])|(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*])|(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])).{6,72}$",
+                            "validationMessage": "Password must be at least 6 characters long and have 3 out of the following: one number, one lower case, one upper case, or one special character"
                         },
                         "options": {
-                          "hideConfirmation": false
+                            "hideConfirmation": false
                         },
                         "visible": true
-                      }
-
+                    }
                 ]
             }
-
         ],
         "outputs": {
-
             "acceptOTNLicenseAgreement": "[steps('Credentials').acceptOTNLicenseAgreement]",
             "adminPasswordOrKey": "[steps('Credentials').adminPasswordOrKey]",
             "adminUsername": "[steps('Credentials').adminUsername]",
-            "dnsLabelPrefix": "[basics('dnsLabelPrefix')]", 
+            "dnsLabelPrefix": "[basics('dnsLabelPrefix')]",
             "otnAccountPassword": "[steps('Credentials').otnAccountPassword]",
             "otnAccountUsername": "[steps('Credentials').otnAccountUsername]",
             "vmSizeSelect": "[steps('VirtualMachineConfig').vmSizeSelect]",
