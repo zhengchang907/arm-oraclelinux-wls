@@ -102,6 +102,7 @@
       "vmName": "WebLogicServerVM",
       "vmSize": "[parameters('vmSizeSelect')]",
       "virtualNetworkName": "olvmVNET",
+      "oradownScript": "oradown.sh",
       "ScriptFileName": "installWeblogic.sh",
       "linuxConfiguration": {
          "disablePasswordAuthentication": true,
@@ -268,7 +269,7 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
                "fileUris": [
-                  "[uri(parameters('_artifactsLocation'), concat('scripts/', variables('ScriptFileName'), parameters('_artifactsLocationSasToken')))]"
+                  "[uri(parameters('_artifactsLocation'), concat('scripts/', variables('ScriptFileName'), parameters('_artifactsLocationSasToken'))),uri(parameters('_artifactsLocation'), concat('scripts/', variables('oradownScript'), parameters('_artifactsLocationSasToken')))]"
                ],
                "commandToExecute": "[concat('sh',' ',variables('ScriptFileName'),' ',parameters('acceptOTNLicenseAgreement'),' ',parameters('otnAccountUsername'),' ',parameters('otnAccountPassword'))]"
             }
