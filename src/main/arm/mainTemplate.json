@@ -16,6 +16,10 @@
          },
          "defaultValue": ""
       },
+      "guidValue": {
+            "type": "string",
+            "defaultValue": "[newGuid()]"
+      },
       "adminUsername": {
          "type": "string",
          "metadata": {
@@ -85,7 +89,7 @@
       }
    },
    "variables": {
-      "storageAccountName": "[concat(take(replace(guid(toLower(resourceGroup().name)),'-',''),6),'olvm')]",
+      "storageAccountName": "[concat(take(replace(parameters('guidValue'),'-',''),6),'olvm')]",
       "imagePublisher": "Oracle",
       "imageOffer": "Oracle-Linux",
       "nicName": "olvmNIC",
