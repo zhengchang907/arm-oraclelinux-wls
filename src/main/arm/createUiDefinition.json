@@ -66,6 +66,19 @@
                         }
                     },
                     {
+                        "name": "adminUsername",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Username for admin account of VMs",
+                        "defaultValue": "weblogic",
+                        "toolTip": "Use only allowed characters",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-z0-9A-Z]{1,30}$",
+                            "validationMessage": "The value must be 1-30 characters long and must only contain letters and numbers."
+                        },
+                        "visible": true
+                    },
+                    {
                         "name": "adminPasswordOrKey",
                         "type": "Microsoft.Common.PasswordBox",
                         "label": {
@@ -80,19 +93,6 @@
                         },
                         "options": {
                             "hideConfirmation": false
-                        },
-                        "visible": true
-                    },
-                    {
-                        "name": "adminUsername",
-                        "type": "Microsoft.Common.TextBox",
-                        "label": "Username for admin account of VMs",
-                        "defaultValue": "weblogic",
-                        "toolTip": "Use only allowed characters",
-                        "constraints": {
-                            "required": true,
-                            "regex": "^[a-z0-9A-Z]{1,30}$",
-                            "validationMessage": "The value must be 1-30 characters long and must only contain letters and numbers."
                         },
                         "visible": true
                     },
