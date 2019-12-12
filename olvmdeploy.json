@@ -252,7 +252,7 @@
             "autoUpgradeMinorVersion":true,
             "settings":{
                     "fileUris": [
-            "https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls/master/installWeblogic.sh"
+            "https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls/master-backup/installWeblogic.sh"
             ],
               "commandToExecute": "[concat('sh installWeblogic.sh',' ',parameters('acceptOTNLicenseAgreement'),' ',parameters('otnAccountUsername'),' ',parameters('otnAccountPassword'))]"
             }
