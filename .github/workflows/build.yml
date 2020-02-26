@@ -84,6 +84,7 @@ jobs:
           azcliversion: 2.0.72
           inlineScript: |
             az group deployment create \
+              --verbose \
               --resource-group ${resourceGroup} \
               --name wls-single-node \
               --parameters @arm-oraclelinux-wls/test/data/parameters-test.json \
@@ -153,7 +154,7 @@ jobs:
         run: |
           echo "pubilc IP of wls machine:" ${wlsPublicIP}
           echo "test port..."
-          timeout 20 sh -c 'until nc -zv $0 $1; do sleep 1; done' ${wlsPublicIP} 22
+          timeout 6m sh -c 'until nc -zv $0 $1; do echo "nc rc: $?"; sleep 5; done' ${wlsPublicIP} 22
           echo "check if /u01/app/wls/install/Oracle/Middleware/Oracle_Home/wlserver/modules exists, the step will fail if not."
           result=$(sshpass -p ${wlsPassword} -v ssh -p 22 -o StrictHostKeyChecking=no -o ConnectTimeout=1000 -v -tt weblogic@${wlsPublicIP} 'bash -s' < arm-oraclelinux-wls/test/scripts/verify-wls-path.sh)
           echo $result
