@@ -12,21 +12,18 @@ on:
   repository_dispatch:
 
 env:
+  azCliVersion: 2.0.72
   location: eastus
   nsg: wls-nsg
-  otnAccountUsername: ${{ secrets.OTN_USERID }}
   otnAccountPassword: ${{ secrets.OTN_PASSWORD }}
+  otnAccountUsername: ${{ secrets.OTN_USERID }}
+  resourceGroup: ${{ github.run_id }}-${{ github.run_number }}
   wlsPassword: ${{ secrets.WLS_PASSWORD }}
     
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Initialize
-        id: initialize
-        run: |
-         echo "##[set-env name=resourceGroup;]${GITHUB_RUN_ID}${GITHUB_RUN_NUMBER}"
-
       - name: Checkout azure-javaee-iaas
         id: checkout-azure-javaee-iaas
         uses: actions/checkout@v2
@@ -64,9 +61,9 @@ jobs:
         id: create-resource-group
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.0.72
+          azcliversion: ${{ env.azCliVersion }}
           inlineScript: |
-            az group create --verbose --name ${resourceGroup} --location ${location}
+            az group create --verbose --name ${{ env.resourceGroup }} --location ${location}
 
       - name: Prepare deployed parameters
         id: prepare-deployed-parameters
@@ -81,11 +78,11 @@ jobs:
         id: deploy-wls
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.0.72
+          azcliversion: ${{ env.azCliVersion }}
           inlineScript: |
             az group deployment create \
               --verbose \
-              --resource-group ${resourceGroup} \
+              --resource-group ${{ env.resourceGroup }} \
               --name wls-single-node \
               --parameters @arm-oraclelinux-wls/test/data/parameters-test.json \
               --template-file arm-oraclelinux-wls/target/arm/mainTemplate.json
@@ -94,10 +91,10 @@ jobs:
         id: verify-nsg
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.0.72
+          azcliversion: ${{ env.azCliVersion }}
           inlineScript: |
             echo "query nsg name, will exit with error if nsg does not exist."
-            az network nsg show -g ${resourceGroup} -n ${nsg} --query "name"
+            az network nsg show -g ${{ env.resourceGroup }} -n ${nsg} --query "name"
 
       - name: Get IP of build machine
         id: get-ip-address
@@ -109,11 +106,11 @@ jobs:
         id: add-ip-to-security-rule
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.0.72
+          azcliversion: ${{ env.azCliVersion }}
           inlineScript: |
             echo "query existing source address prefixes"
             sourceAddressPrefixes=$(az network nsg rule show \
-              --resource-group ${resourceGroup} \
+              --resource-group ${{ env.resourceGroup }} \
               --nsg-name wls-nsg \
               --name NRMS-Rule-101 \
               --query "sourceAddressPrefixes")
@@ -122,7 +119,7 @@ jobs:
               sed 's/,/ /g; s/\[//g; s/\]//g; s/"//g')
             echo ${sourceAddressPrefixes}
             az network nsg rule update \
-              --resource-group ${resourceGroup} \
+              --resource-group ${{ env.resourceGroup }} \
               --nsg-name wls-nsg \
               --name NRMS-Rule-101 \
               --source-address-prefixes $sourceAddressPrefixes
@@ -131,20 +128,20 @@ jobs:
         id: restart-wls-wm
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.0.72
+          azcliversion: ${{ env.azCliVersion }}
           inlineScript: |
             echo "restart vm to make sure security rule work."
-            az vm restart -g ${resourceGroup} -n WebLogicServerVM
+            az vm restart -g ${{ env.resourceGroup }} -n WebLogicServerVM
     
       - name: Query public IP of WebLogic Server VM
         id: query-wls-machine-ip
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.0.72
+          azcliversion: ${{ env.azCliVersion }}
           inlineScript: |
             echo "query public ip"
             publicIP=$(az vm show \
-              --resource-group ${resourceGroup} \
+              --resource-group ${{ env.resourceGroup }} \
               --name WebLogicServerVM -d \
               --query publicIps -o tsv)
             echo "##[set-env name=wlsPublicIP;]${publicIP}"
@@ -190,7 +187,7 @@ jobs:
   
   cleanup:
     needs: build
-    if: always()
+    if: success()
     runs-on: ubuntu-latest
     steps:
       - uses: azure/login@v1
@@ -200,8 +197,6 @@ jobs:
         id: delete-resource-group
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.0.72
+          azcliversion: ${{ env.azCliVersion }}
           inlineScript: |
-            resourceGroup=${GITHUB_RUN_ID}${GITHUB_RUN_NUMBER}
-            echo ${resourceGroup} ${location}
-            az group delete --yes --no-wait --verbose --name ${resourceGroup}
+            az group delete --yes --no-wait --verbose --name ${{ env.resourceGroup }}
