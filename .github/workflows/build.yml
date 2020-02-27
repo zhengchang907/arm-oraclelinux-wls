@@ -17,7 +17,7 @@ env:
   nsg: wls-nsg
   otnAccountPassword: ${{ secrets.OTN_PASSWORD }}
   otnAccountUsername: ${{ secrets.OTN_USERID }}
-  resourceGroup: ${{ github.run_id }}-${{ github.run_number }}
+  resourceGroup: wls-${{ github.run_id }}-${{ github.run_number }}
   wlsPassword: ${{ secrets.WLS_PASSWORD }}
     
 jobs:
@@ -122,7 +122,8 @@ jobs:
               --resource-group ${{ env.resourceGroup }} \
               --nsg-name wls-nsg \
               --name NRMS-Rule-101 \
-              --source-address-prefixes $sourceAddressPrefixes
+              --source-address-prefixes $sourceAddressPrefixes \
+              --destination-port-ranges 443 22
 
       - name: Restart wls VM
         id: restart-wls-wm
@@ -144,6 +145,7 @@ jobs:
               --resource-group ${{ env.resourceGroup }} \
               --name WebLogicServerVM -d \
               --query publicIps -o tsv)
+            echo "VM Public IP ${publicIp}"
             echo "##[set-env name=wlsPublicIP;]${publicIP}"
       
       - name: Verify WebLogic Server
