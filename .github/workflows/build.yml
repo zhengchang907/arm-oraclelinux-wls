@@ -65,14 +65,16 @@ jobs:
           inlineScript: |
             az group create --verbose --name ${{ env.resourceGroup }} --location ${location}
 
-      - name: Prepare deployed parameters
-        id: prepare-deployed-parameters
+      - name: Prepare deployed parameters and test script
+        id: prepare-deployed-parameters-and-test-script
         run: |
          sed -i "s/#otnAccountUsername#/$otnAccountUsername/g; \
           s/#otnAccountPassword#/$otnAccountPassword/g; \
           s/#location#/$location/g; \
           s/#adminPasswordOrKey#/$wlsPassword/g" \
           arm-oraclelinux-wls/test/data/parameters-test.json
+         sed -i "s/#adminPasswordOrKey#/$wlsPassword/g" \
+          arm-oraclelinux-wls/test/scripts/verify-wls-path.sh
 
       - name: Deploy WebLogic Server Single Node offer
         id: deploy-wls
