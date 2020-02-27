@@ -191,7 +191,7 @@ jobs:
   
   cleanup:
     needs: build
-    if: success()
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: azure/login@v1
