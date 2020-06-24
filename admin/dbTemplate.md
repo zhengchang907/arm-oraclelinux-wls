@@ -1,3 +1,5 @@
+{% include variables.md %}
+
 # Apply Database ARM Template to {{ site.data.var.wlsFullBrandName }}
 
 This page documents how to configure an existing deployment of {{ site.data.var.wlsFullBrandName }} with an existing Azure database using Azure CLI.
@@ -31,7 +33,6 @@ You must construct a parameters JSON file containing the parameters to the datab
 | `dbPassword`| See below for details. |
 | `dbUser` | See below for details. |
 | `dsConnectionURL`| See below for details. |
-| `enableDB`| must be `true`.  Note this is JSON boolean, so it must not be in quotes. |
 | `jdbcDataSourceName`| Must be the JNDI name for the JDBC DataSource. |
 | `location` | Must be the same region into which the server was initially deployed. |
 | `wlsPassword` | Must be the same value provided at deployment time. |
@@ -42,7 +43,7 @@ You must construct a parameters JSON file containing the parameters to the datab
 This value must be the following.
 
 ```
-{{ site.data.var.artifactsLocationBase }}{{ page.dir | replace: "/", "" }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/
+{{ armTemplateBasePath }}
 ```
 
 ### Obtain the JDBC Connection String, Database User, and Database Password
@@ -117,7 +118,7 @@ Here is a fully filled out parameters file.   Note that we did not include `admi
     "contentVersion": "1.0.0.0",
     "parameters": {
         "_artifactsLocation":{
-            "value": "{{ site.data.var.artifactsLocationBase }}{{ page.dir | replace: "/", "" }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/"
+            "value": "{{ armTemplateBasePath }}"
           },
         "location": {
           "value": "eastus"
@@ -133,9 +134,6 @@ Here is a fully filled out parameters file.   Note that we did not include `admi
         },
         "dbUser": {
           "value": "postgres@ejb060801p"
-        },
-        "enableDB": {
-            "value": true
         },
         "jdbcDataSourceName": {
           "value": "jdbc/ejb060801p"
@@ -154,15 +152,29 @@ Here is a fully filled out parameters file.   Note that we did not include `admi
 
 Assume your parameters file is available in the current directory and is named `parameters.json`.  This section shows the commands to configure your {{ site.data.var.wlsFullBrandName }} deployment with the specified database.  Replace `yourResourceGroup` with the Azure resource group in which the {{ site.data.var.wlsFullBrandName }} is deployed.
 
-```
-az group deployment validate --verbose --resource-group `yourResourceGroup` --parameters @parameters.json --template-uri {{ site.data.var.artifactsLocationBase }}{{ page.dir | replace: "/", "" }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/mainTemplate.json
+### First, validate your parameters file
+
+The `az group deployment validate` command is very useful to validate your parameters file is syntactically correct.
+
+```bash
+az group deployment validate --verbose --resource-group `yourResourceGroup` --parameters @parameters.json --template-uri {{ armTemplateBasePath }}nestedtemplates/dbTemplate.json
 ```
 
-You will not get any error if the database service is deployed successfully.
+If the command returns with an exit status other than `0`, inspect the output and resolve the problem before proceeding.  You can check the exit status by executing the commad `echo $?` immediately after the `az` command.
 
-This is an example output of successful deployment.  
+### Next, execute the template
 
+After successfully validating the template invocation, change `validate` to `create` to invoke the template.
+
+```bash
+az group deployment create --verbose --resource-group `yourResourceGroup` --parameters @parameters.json --template-uri {{ armTemplateBasePath }}nestedtemplates/dbTemplate.json
 ```
+
+As with the validate command, if the command returns with an exit status other than `0`, inspect the output and resolve the problem.
+
+This is an example output of successful deployment.  Look for `"provisioningState": "Succeeded"` in your output.
+
+```json
 {
   "id": "/subscriptions/05887623-95c5-4e50-a71c-6e1c738794e2/resourceGroups/oraclevm-admin-0602/providers/Microsoft.Resources/deployments/db",
   "location": null,
@@ -198,17 +210,17 @@ This is an example output of successful deployment.
     "outputs": {
       "artifactsLocationPassedIn": {
         "type": "String",
-        "value": "https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls-admin/master/src/main/arm/"
+        "value": "{{ armTemplateBasePath }}"
       }
     },
     "parameters": {
       "_artifactsLocation": {
         "type": "String",
-        "value": "https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls-admin/master/src/main/arm/"
+        "value": "{{ armTemplateBasePath }}"
       },
       "_artifactsLocationDbTemplate": {
         "type": "String",
-        "value": "https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls-admin/master/src/main/arm/"
+        "value": "{{ armTemplateBasePath }}"
       }
       "adminVMName": {
         "type": "String",
@@ -298,13 +310,13 @@ This is an example output of successful deployment.
 
 ## Verify Database Connection
 
-Follow the steps to check if AAD is enabled.
+Follow the steps to check if the database has successfully been connected.
 
-* Go to WebLogic Admin Server Console,  you can find it from output of WebLogic Instance deployment.
-* Go to Services -> DataSources
-* Click JDBC database name, e.g. `jdbc/WebLogicDB`
-* Click Monitoring -> Testing
-* Select `admin` and click "Test Data Source"
-* If the database is enbaled, you will get message like "Test of jdbc/WebLogicDB on server admin was successful."
+- Visit the {{ site.data.var.wlsFullBrandName }} Admin console.
+- In the left navigation pane, expand the **Services** tree node and the **DataSources** child node.
+- Select the row for the JDBC database name, for example `jdbc/WebLogicDB`.
+- Select the **Monitoring** tab and the **Testing** sub-tab.
+- Select `admin` and select **Test Data Source**
+- If the database is enbaled, you will see a message similar to "Test of jdbc/WebLogicDB on server admin was successful."
 
 
