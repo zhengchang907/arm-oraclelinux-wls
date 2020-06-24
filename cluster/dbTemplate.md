@@ -42,7 +42,7 @@ You must construct a parameters JSON file containing the parameters to the datab
 This value must be the following.
 
 ```
-{{ site.data.var.artifactsLocationBase }}{{ page.dir }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/
+{{ site.data.var.artifactsLocationBase }}{{ page.dir | replace: "/", "" }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/
 ```
 
 ### Obtain the JDBC Connection String, Database User, and Database Password
@@ -117,7 +117,7 @@ Here is a fully filled out parameters file.   Note that we did not include `admi
     "contentVersion": "1.0.0.0",
     "parameters": {
         "_artifactsLocation":{
-            "value": "{{ site.data.var.artifactsLocationBase }}{{ page.dir }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/"
+            "value": "{{ site.data.var.artifactsLocationBase }}{{ page.dir | replace: "/", "" }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/"
           },
         "location": {
           "value": "eastus"
@@ -155,7 +155,7 @@ Here is a fully filled out parameters file.   Note that we did not include `admi
 Assume your parameters file is available in the current directory and is named `parameters.json`.  This section shows the commands to configure your {{ site.data.var.wlsFullBrandName }} deployment with the specified database.  Replace `yourResourceGroup` with the Azure resource group in which the {{ site.data.var.wlsFullBrandName }} is deployed.
 
 ```
-az group deployment validate --verbose --resource-group `yourResourceGroup` --parameters @parameters.json --template-uri {{ site.data.var.artifactsLocationBase }}{{ page.dir }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/mainTemplate.json
+az group deployment validate --verbose --resource-group `yourResourceGroup` --parameters @parameters.json --template-uri {{ site.data.var.artifactsLocationBase }}{{ page.dir | replace: "/", "" }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/mainTemplate.json
 ```
 
 You will not get any error if the database service is deployed successfully.
