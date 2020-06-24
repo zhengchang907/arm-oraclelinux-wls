@@ -21,11 +21,33 @@ create one from the Azure portal.
 
 ## Prepare the Parameters JSON file
 
-You must construct a parameters JSON file containing the parameters to the database ARM template.   We must specify the information of the exsiting {{ site.data.var.wlsFullBrandName }} and database instance, as shown next.
+You must construct a parameters JSON file containing the parameters to the database ARM template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files.   We must specify the information of the exsiting {{ site.data.var.wlsFullBrandName }} and database instance. This section shows how to obtain the values for the following required properties.
+
+| Parameter Name | Explanation |
+|----------------|-------------|
+| `_artifactsLocation`| See below for details. |
+| `adminVMName`| At deployment time, if this value was changed from its default value, the value used at deployment time must be used.  Otherwise, this parameter should be omitted. |
+| `databaseType`| Must be one of `postgresql`, `oracle` or `sqlserver` |
+| `dbPassword`| See below for details. |
+| `dbUser` | See below for details. |
+| `dsConnectionURL`| See below for details. |
+| `enableDB`| must be `true`.  Note this is JSON boolean, so it must not be in quotes. |
+| `jdbcDataSourceName`| Must be the JNDI name for the JDBC DataSource. |
+| `location` | Must be the same region into which the server was initially deployed. |
+| `wlsPassword` | Must be the same value provided at deployment time. |
+| `wlsUserName` | Must be the same value provided at deployment time. |
+
+### `_artifactsLocation`
+
+This value must be the following.
+
+```
+{{ site.data.var.artifactsLocationBase }}{{ page.dir }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/
+```
 
 ### Obtain the JDBC Connection String, Database User, and Database Password
 
-The parameter `dsConnectionURL` stands for JDBC connection string. To obtain the JDBC connection string for your database:
+The parameter `dsConnectionURL` stands for JDBC connection string. The connection string is database specific.
 
 #### Oracle Database:
 
@@ -83,53 +105,57 @@ When passing this value to the ARM template, remove the database user and passwo
 jdbc:sqlserver://rwo102804.database.windows.net:1433;database={your_database};encrypt=true;tr
 ```
 
-Finally, replace `{your_database}` with the name of your database, typically `postgres`.
+Finally, replace `{your_database}` with the name of your database.
 
-2. For `_artifactsLocation`, please use the default value, `https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls-admin/master/src/main/arm/`.
+#### Example Parameters JSON
 
-```
+Here is a fully filled out parameters file.   Note that we did not include `adminVMName`.
+
+```json
 {
-    "_artifactsLocation":{
-        "value": "https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls-admin/master/src/main/arm/"
-      },
-      "location": {
-        "value": "<location>"
-      },
-      "databaseType": {
-        "value": "<db-type>"
-      },
-      "dsConnectionURL": {
-        "value": "<ds-string>"
-      },
-      "dbPassword": {
-        "value": "<db-psw>"
-      },
-      "dbUser": {
-        "value": "<db-user>"
-      },
-      "jdbcDataSourceName": {
-        "value": "<jdbc-name>"
-      },
-      "wlsPassword": {
-        "value": "<wls-psw>"
-      },
-      "wlsUserName": {
-        "value": "<wls-user>"
-      },
-      "adminVMName":{
-        "value": "<admin-vm-name>"
-      }
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "_artifactsLocation":{
+            "value": "{{ site.data.var.artifactsLocationBase }}{{ page.dir }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/"
+          },
+        "location": {
+          "value": "eastus"
+        },
+        "databaseType": {
+          "value": "postgresql"
+        },
+        "dsConnectionURL": {
+          "value": "jdbc:postgresql://ejb060801p.postgres.database.azure.com:5432/postgres?sslmode=require"
+        },
+        "dbPassword": {
+          "value": "Secret123!"
+        },
+        "dbUser": {
+          "value": "postgres@ejb060801p"
+        },
+        "enableDB": {
+            "value": true
+        },
+        "jdbcDataSourceName": {
+          "value": "jdbc/ejb060801p"
+        },
+        "wlsPassword": {
+          "value": "welcome1"
+        },
+        "wlsUserName": {
+          "value": "weblogic"
+        }
     }
+}
 ``` 
 
-Run the following command to apply database service to your WebLogic Server.  
+## Invoke the ARM template
+
+Assume your parameters file is available in the current directory and is named `parameters.json`.  This section shows the commands to configure your {{ site.data.var.wlsFullBrandName }} deployment with the specified database.  Replace `yourResourceGroup` with the Azure resource group in which the {{ site.data.var.wlsFullBrandName }} is deployed.
 
 ```
-RESOURCE_GROUP=<resource-group-of-your-weblogic-server-instance>
-
-# cd nestedtemplates
-# Create parameters.json with above variables, and place it in the same folder with dbTemplate.json.
-az group deployment create --verbose --resource-group $RESOURCE_GROUP --name db --parameters @parameters.json --template-file dbTemplate.json
+az group deployment validate --verbose --resource-group `yourResourceGroup` --parameters @parameters.json --template-uri {{ site.data.var.artifactsLocationBase }}{{ page.dir }}/{{ site.data.var.artifactsLocationTag }}/src/main/arm/mainTemplate.json
 ```
 
 You will not get any error if the database service is deployed successfully.
