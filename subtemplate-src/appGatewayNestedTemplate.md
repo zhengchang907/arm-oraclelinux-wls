@@ -1,6 +1,8 @@
-# Set up Application Gateway to WebLogic Server Cluster Instance
+{% include variables.md %}
 
-This article introduces how to set up application gateway to an existing WebLogic Server cluster instance.
+# Apply Azure App Gateway ARM Template to {{ site.data.var.wlsFullBrandName }}
+
+This page documents how to configure an existing deployment of {{ site.data.var.wlsFullBrandName }} with Azure Application Gateway using the Azure CLI.
 
 ## Prerequisites
 
@@ -10,84 +12,114 @@ This article introduces how to set up application gateway to an existing WebLogi
 
 ### WebLogic Server Instance
 
-The applciation gateway tempate will be applied to an existing WebLogic Server cluster instance.  If you don't have one, please create a new instance from Azure portal, link to WebLogic offer is available from [Oracle WebLogic Server Cluster](https://portal.azure.com/#create/oracle.20191007-arm-oraclelinux-wls-cluster20191007-arm-oraclelinux-wls-cluster).  
+The Application Gateway ARM tempate will be applied to an existing {{ site.data.var.wlsFullBrandName }} instance.  If you don't have one, please create a new instance from the Azure portal, by following the link to the offer [in the index](index.md).
 
-### Download Template
+### Certificate for SSL Termination
 
-Download arm-oraclelinux-wls-admin-version-arm-assembly.zip from latest release, e.g. now, the latest version is v1.0.20, download from this link: https://github.com/wls-eng/arm-oraclelinux-wls-cluster/releases/download/v1.0.20/arm-oraclelinux-wls-cluster-1.0.20-arm-assembly.zip.
+Because the Application Gateway serves as the front end load balancer for the {{ site.data.var.wlsFullBrandName }} cluster, it must be provided with a certificate to allow browsers to connect via SSL.
 
-Unzip the ARM template to your local machine, we will run nestedtemplates/appGatewayNestedTemplate.json to set up application gateway.
+When deploying the {{ site.data.var.wlsFullBrandName }} offer from the Azure Portal, you can configure the deployment to fetch the SSL certificate and its password from a pre-existing Azure Key Vault.  For a high-level introduction to SSL Certificates with Azure Key Vault see [Get started with Key Vault certificates](https://docs.microsoft.com/en-us/azure/key-vault/certificates/certificate-scenarios).  For an overview of TLS termination with Application Gateway see [Overview of TLS termination and end to end TLS with Application Gateway](https://docs.microsoft.com/en-us/azure/application-gateway/ssl-overview).  When configuring the Application Gateway after deployment, you must base64 encode the certificate and also know the password for the certificate.
 
-## Run Allication Gateway Template
+## Prepare the Parameters JSON file
 
-We need to specify information of exsiting WebLogic Server and application gateway, please create parameters.json with the following variables, and change the value to yours.
+You must construct a parameters JSON file containing the parameters to the database ARM template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files.   We must specify the information of the exsiting SSL certificate. This section shows how to obtain the values for the following required properties.
 
-First, use base64 to encode you application gateway certificate, and output to a file.  
+| Parameter Name | Explanation |
+|----------------|-------------|
+| `_artifactsLocation`| See below for details. |
+| `adminVMName`| At deployment time, if this value was changed from its default value, the value used at deployment time must be used.  Otherwise, this parameter should be omitted. |
+| `appGatewaySSLCertificateData`| See below for details. |
+| `appGatewaySSLCertificatePassword`| See below for details. |
+| `dnsNameforApplicationGateway`| (optional) A prefix value for the dns name of the Application Gateway. |
+| `gatewayPublicIPAddressName` | (optional) A prefix value for the public IP address of the Application Gateway. |
+| `location` | Must be the same region into which the server was initially deployed. |
+| `managedServerPrefix` | At deployment time, if this value was changed from its default value, the value used at deployment time must be used.  Otherwise, this parameter should be omitted. |
+| `numberOfInstances` | The number of instances in the cluster.  Must be the same as the value used at deployment time. |
+| `wlsDomainName` | At deployment time, if this value was changed from its default value, the value used at deployment time must be used.  Otherwise, this parameter should be omitted. |
+| `wlsPassword` | Must be the same value provided at deployment time. |
+| `wlsUserName` | Must be the same value provided at deployment time. |
+
+### `_artifactsLocation`
+
+This value must be the following.
 
 ```
+{{ armTemplateBasePath }}
+```
+
+### SSL Certificate Data and Password
+
+Use base64 to encode your existing PFX format certificate.
+
+```bash
 base64 your-certificate.pfx -w 0 >temp.txt
 ```
-Please note:
 
-`_artifactsLocation`: please keep the vaule.  
-`appGatewaySSLCertificateData`: must be base64 encode string, please disable line wrapping.
+Use the content as this file as the value of the `appGatewaySSLCertificateData` parameter.
 
-```
+It is assumed that you have the password for the certificate.  Use this as the value of the `appGatewaySSLCertificatePassword` parameter.
+
+#### Example Parameters JSON
+
+Here is a fully filled out parameters file.   Note that we did not include any optional parameters, assuming the {{ site.data.var.wlsFullBrandName }} was deployed accepting the default values.
+
+```json
 {
-    "_artifactsLocation":{
-        "value": "https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls-cluster/master/arm-oraclelinux-wls-cluster/src/main/arm/"
-    },
-    "location": {
-        "value": "eastus"
-    },
-    "adminVMName": {
-        "value": "<admin-vm-name>"
-    },
-    "appGatewaySSLCertificateData": {
-        "value": "<base64-code-of-certificate>"
-    },
-    "appGatewaySSLCertificatePassword": {
-        "value": "<certificate-password>"
-    },
-    "dnsNameforApplicationGateway": {
-        "value": "<agw-dns-name>"
-    },
-    "gatewayPublicIPAddressName": {
-        "value": "<agw-public-ip-name>"
-    },
-    "managedServerPrefix": {
-        "value": "<prefix-managed-server>"
-    },
-    "numberOfInstances": {
-        "value": <instance-num>
-    },
-    "wlsDomainName": {
-        "value": "<wls-domain-name>"
-    },
-    "wlsPassword": {
-        "value": "<wls-psw>"
-    },
-    "wlsUserName": {
-        "value": "<wls-user>"
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "_artifactsLocation":{
+            "value": "{{ armTemplateBasePath }}"
+          },
+        "appGatewaySSLCertificateData": {
+             "value": "MIIKCQIB...sOr3QICCAA="
+        },
+        "appGatewaySSLCertificatePassword": {
+                "type": "myPasswordInClearText"
+        },
+        "numberOfInstances": {
+          "value": 3
+        },
+        "location": {
+          "value": "eastus"
+        },
+        "wlsPassword": {
+          "value": "welcome1"
+        },
+        "wlsUserName": {
+          "value": "weblogic"
+        }
     }
 }
 ``` 
 
-Replace the following parameters and run the command to set up application gateway to your WebLogic Server cluster.  
+## Invoke the ARM template
 
+Assume your parameters file is available in the current directory and is named `parameters.json`.  This section shows the commands to configure your {{ site.data.var.wlsFullBrandName }} deployment with the specified database.  Replace `yourResourceGroup` with the Azure resource group in which the {{ site.data.var.wlsFullBrandName }} is deployed.
+
+### First, validate your parameters file
+
+The `az group deployment validate` command is very useful to validate your parameters file is syntactically correct.
+
+```bash
+az group deployment validate --verbose --resource-group `yourResourceGroup` --parameters @parameters.json --template-uri {{ armTemplateBasePath }}nestedtemplates/appGatewayNestedTemplate.json
 ```
-RESOURCE_GROUP=<resource-group-of-your-weblogic-server-instance>
 
-# cd nestedtemplates
-# Create parameters.json with above variables, and place it in the same folder with appGatewayNestedTemplate.json.
-az group deployment create --verbose --resource-group $RESOURCE_GROUP --name agw --parameters @parameters.json --template-file appGatewayNestedTemplate.json
+If the command returns with an exit status other than `0`, inspect the output and resolve the problem before proceeding.  You can check the exit status by executing the commad `echo $?` immediately after the `az` command.
+
+### Next, execute the template
+
+After successfully validating the template invocation, change `validate` to `create` to invoke the template.
+
+```bash
+az group deployment create --verbose --resource-group `yourResourceGroup` --parameters @parameters.json --template-uri {{ armTemplateBasePath }}nestedtemplates/appGatewayNestedTemplate.json
 ```
 
-You will not get any error if application gateway is deployed successfully.
+As with the validate command, if the command returns with an exit status other than `0`, inspect the output and resolve the problem.
 
-This is an example output of successful deployment.  
+This is an example output of successful deployment.  Look for `"provisioningState": "Succeeded"` in your output.
 
-```
+```json
 {
   "id": "/subscriptions/05887623-95c5-4e50-a71c-6e1c738794e2/resourceGroups/oraclevm-cluster-0604/providers/Microsoft.Resources/deployments/cli",
   "location": null,
@@ -172,11 +204,11 @@ This is an example output of successful deployment.
     "parameters": {
       "_artifactsLocation": {
         "type": "String",
-        "value": "https://raw.githubusercontent.com/galiacheng/arm-oraclelinux-wls-cluster/deploy/arm-oraclelinux-wls-cluster/src/main/arm/"
+        "value": "{{ armTemplateBasePath }}"
       },
       "_artifactsLocationAGWTemplate": {
         "type": "String",
-        "value": "https://raw.githubusercontent.com/galiacheng/arm-oraclelinux-wls-cluster/deploy/arm-oraclelinux-wls-cluster/src/main/arm/"
+        "value": "{{ armTemplateBasePath }}"
       },
       "_artifactsLocationSasToken": {
         "type": "SecureString"
@@ -187,11 +219,11 @@ This is an example output of successful deployment.
       },
       "appGatewaySSLCertificateData": {
         "type": "String",
-        "value": "MIIKQQIBAzCCCgcGCSqGSIb3DQEHAaCCCfgEggn0MIIJ8DCCBKcGCSqGSIb3DQEHBqCCBJgwggSUAgEAMIIEjQYJKoZIhvcNAQcBMBwGCiqGSIb3DQEMAQYwDgQI6AB+FBLZ6zMCAggAgIIEYN6eVnBIdbhS89C6P7zd76at+tOhNXIAIdjdmpXxtS9MhAGTlH1iq4mlHNmSwgFUtHWi+QkUXr00Xi/+t8LZzCQPh4vAUVZVRJ2Yj0gA0VdIB+bBGA1wou93VJ1zr6PQpzhHRiiJ0eNFR0rZwmNPX44KMwZcbDVt+7qqgwItP6tIy3G6a+DoqUjRtBbgY9XQKwDVV/NcQ88tkGkDEWLVhTPgFOV1H47qugqKYzNDiegqd7osdDKY/f4vXz1t5HLnEfm2UxvPzHZD/xiMlZ/cnk7R40c4JXhjKTR3DQ0J+TZKW94pvDYz+HixiUV5/6Yw3O6SKhTduEhzhVO0yYh5msfBC86nz4bvt35Dy/KcaqPOFPbJ51uftO5lDHLMXX3ICypNQrIkFSfUafgFRhRnCMg+CBc/yaapY8if/ZPtWW530bk/uKL6CZXOqgGnGUsRvveRfum3rbLyduMgDGBsXM/dLmDVqCSECKSzxneraEaX5VOtQokk8vRx+clv0XR0LTG9iSN9Tez/MfnS6Ammh0iXqQWhYdDWLtGoyIEq2U4DMlIpvUyi5r1KrZwG0mJsyTnlFxNPXcgvA1LPlsvD5EBcpQTBtUL04Apg0W0xmXj8kfCzrBGUR8YTBCL0A6mH/a63t+1OBIZeYBCuWKDGr/6FXkkfS1XHM8WGGoor+m/rc9iThAj7c3KoA8i/G7hYrsXP16ranBb9kVNmKgQ0uRKPvx1jNCaewp7cEFXs7L/+TqtTOc/UMExeGu3kUafbL+4jTO0+/kF/F1aYMzPgO0T9Fg5XNDdwwfuoXfM21Qnn5JFH8oEfGFxzZeDot9PgBOj0ekp7dd1KI72uIgDVn0S/BNTw+DJpR2UhKR3TGzWL/TeDe1cDf5BBHZ66d5HIg7g5oNcGIIW5YTAhbDKkNdP5+ACRxD5KShSXsKDcAqQzqoJObrN6v0tr2FCu14F01RZAI3C6ROwwLsX4g+BcLlU+Gj8lvZIe9U+XNsdP8HMOhRklzuVYe/ifCGCJuRc8Jikm09jqUUJwacjvWeTP/VYkpGTWoi9nwCSDdsWicM5ouoc2eJWubFGjWHqsCoCJoXlHEMxBVV5KTatpU6cUW4CMrbqrCNXshnD/7kSN442ZfNcWgC8rsM8rloCS9feTA3mE9s9XrUelrMj7FhaOX7krJYaE8w22F+p8wBc41JY5tggMETpi5KyDzt+SDgmC5hOLEr+LEExYF7GCAUJRDJB7qJfjCA2ctqwJzfEejUjqt5HpHtcC7Qf7qACCgLmHrHSX6o9/urLVZsGnxMhadm9MNuSSW0z3od5b1b6XW3PfOSXqUZykv4ooCmPgkCIVAYoKeG2rwHAhKJ/QhZYXQ2zF34SYEO//hztGSzQKjivWhR2tRa/dCxKR/jrKnBUbedwtRD5LCWTef8rznmdH2wOCkS4KDGYRHqCWS8qr3TywkR8RsYMeZSBba9yoRiC2+jyush4DGyV+mBYXe9LpzuswggVBBgkqhkiG9w0BBwGgggUyBIIFLjCCBSowggUmBgsqhkiG9w0BDAoBAqCCBO4wggTqMBwGCiqGSIb3DQEMAQMwDgQIgPb003LlbnACAggABIIEyMsnCKRj/B1Rx87OT3EYs7IDM81qf8lqVMPAn2Z9m/ARMu+pOBzB5uY9+8FtL+XKd67WnCk/YxErB+fG/1WJHhOAj/DrnFYObz/FQU8ynkrshlDZvhj3IWBQoC2dO8aC13jPy8lyexony3tJMBNZblpLFJF4xsucDa8P3ROsLU7HhZel0LbiYUNIBC5ZRkyVPgG3R+H8iJTR5zTNR3d8gAwmOnlZAi16YOAnYdHrQZ4z29I8l15pY3I3dHo1A62T8jF+YT3+4EyekmD/FkcnxC0CdZ0OrndB+qnrOAnSmCNZ0oozwhvo/S4TT0pOaPBlAZtXE4WRtN0p12L4Dj7Kjbp1hq4CpxjaOq2Q2Y8D+RRgBb18JybYJ85NjfBAMMyVw3QJ09PNG56aYKAGyvrdKYcod5/ycPuLrMQKJmx5AlBzY0aR2MXxOqNBQ/cJDRyirLOAQIN6/7PH0CIlWp76u3EL8OO0fRFhrfbBsuKUoioR6AS518SprrJ3BXQv4cJz+8TsvlZWfM5XkdbFYfCqiCInLlNc7OkYC+H1vch2ResjdEodwqrFimogF0CuxQycgYf83H0aMWpb7kSa3LpcSSE/A9ogK9Rx3e/HmLvbZGzmcyA01D8dDhvqhJscnVBiPPCue6PAmM+RHoU7ma0+m7zk1NdfAtr0MMweqsLAN9U2Z9SCG+H9zMqiWmT6xsg+WhPMwc18W75WOlc6CJ6wCM0clx1bzFIu0jRKab78NLCjTODfRH0p0Sv/SIuJai4xJZCIFRWvMQaQL0Fc0b5x0GFD1ljJM15SMU3cv9/T+rzFgMweIU9gIi9CEZHnzTnp0zQXx3OTv+7ptQ+uqKpKvTyeR4FbDhn8hMX6LMeAnsyB9ZWX+TnKBQrYwjjmmbxcWOQtF9qYWR5dDQTFtY/DFn8r3rnU2DgO5Xe/n7pwDV6oBJ3DO6vhjpZZpsC2r9TTVLJQeK7LWzH2TNvC6vQbGFNLKMRiq5b8kdm2Kq1kiY+kzloy+uRiUf7JNxWDi0uSUUzEQlWP59a+QQ87clrFV4604wny/tHGZCoh6efuZipqT79bPoCVoy4GNylNjcmgrcq6oXJq7vnqbQl2H3/ECRlRg3KRv8lN5WJVKMLhogCy0q0BCoAOCxzaW5qip3n3Pz5OEOEC6WQAUH6U4ceSr+K3ZdcofAcOoRHVNwHcMp1HwflMB6JBo08yx4RrVPrYrkoCdZPRSpC7KSdWhSPhH4+jhgGgaYc90qFxJwRX6TQemfRf7s3EnEk4FGGzU1FYbItRTAJbPzEJIe58ndfzSn/NfoqJQWLv7K4BBYBKUKW0ArJ9Oe4OmPlp/be/FqTM4npZab7zQoeV7pvZmaFg7/dJUBxcTVZBX5eIwebK+zZSSinoT0jDVQgiXF8aV+/rXsCWpJDlTGZGgMsp9bZThHR/kYC1LdVw7qhr0bbnvVjwMn/EDHKVFRhspEF1plt9sTJFY0wsZG2984NPdL+9DfUF2n6xPgkqRg/qipa0NNIODzFNnnx6F1a4fw0U2geELx6rgPJ79rtvwz6kT3KsoV33E+9PMDmTDooKrYwk2Sf95OgLMCGCvJAHtH+0Ts2fDYu7p+EijoleJH7LdOFhgr3qqhYlYP2HHTElMCMGCSqGSIb3DQEJFTEWBBQ35ys3avr+k99lD2b1RqD5mQieXjAxMCEwCQYFKw4DAhoFAAQUEfKwNxwomTOTg32dc3hh5Qj4GFYECFd/2NISLDEkAgIIAA=="
+        "value": "MIIKQQIBAz....EkAgIIAA=="
       },
       "appGatewaySSLCertificatePassword": {
         "type": "String",
-        "value": "wlsEng@aug2019"
+        "value": "myRedactedPassword"
       },
       "dnsNameforApplicationGateway": {
         "type": "String",
@@ -309,22 +341,23 @@ This is an example output of successful deployment.
 ```
 
 ## Verify Application Gateway
-We will deploy a testing application to verify if the appliaction gateway is enabled.  
-Go to Admin Server Console and deploy [webtestapp.war](../resources/webtestapp.war).  
 
-* Go to admin server console, click "Lock & Edit"
-* Click Deployments
-* Click Install
-* Select file webtestapp.war
-* Next. Install this deployment as an application
-* Next. Select cluster-1 and All servers in the cluster
-* Keep configuration as default and click Finish
-* Activate Changes 
+We will deploy a testing application to verify if the appliaction gateway is enabled.
 
-* Go to Deplyments
-* Click Control
-* Select webtestapp
-* Start
-* Servicing all requests
+Go to Admin Server Console and deploy [webtestapp.war](../resources/webtestapp.war).
 
-Then access the application with `<appGatewayHost>/webtestapp`, you will get a page with server host information if application gateway enables.
+- Visit the {{ site.data.var.wlsFullBrandName }} Admin console.
+- Select **Deployments**.
+- Select **Install**.
+- Select file `webtestapp.war`.
+- Select **Next**.  Choose "Install this deployment as an application".
+- Select **Next**. Select "cluster-1" and "All servers in the cluster".
+- Keep configuration as default and select **Finish**.
+- Select **Activate Changes**
+- In the left navigation pane, select **Deployments**.
+- Select **Control**
+- Select `webtestapp`
+- Select **Start**
+- Select **Servicing all requests**
+
+Then access the application with `<appGatewayHost>/webtestapp`, you will get a page with server host information if application gateway was successfully enabled.
