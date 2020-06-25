@@ -75,7 +75,7 @@ Here is a fully filled out parameters file.   Note that we did not include any o
              "value": "MIIKCQIB...sOr3QICCAA="
         },
         "appGatewaySSLCertificatePassword": {
-                "type": "myPasswordInClearText"
+             "value": "myPasswordInClearText"
         },
         "numberOfInstances": {
           "value": 3
