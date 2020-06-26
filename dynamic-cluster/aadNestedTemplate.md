@@ -20,7 +20,7 @@ To apply AAD to {{ site.data.var.wlsFullBrandName }}, you must have an existing 
 
 ## Prepare the Parameters JSON file
 
-You must construct a parameters JSON file containing the parameters to the database ARM template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files.   We must specify the information of the existing {{ site.data.var.wlsFullBrandName }} and database instance. This section shows how to obtain the values for the following required properties.
+You must construct a parameters JSON file containing the parameters to the AAD ARM template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files.   We must specify the information of the existing {{ site.data.var.wlsFullBrandName }} and AAD instance. This section shows how to obtain the values for the following required properties.
 
 | Parameter Name | Explanation |
 |----------------|-------------|
@@ -92,7 +92,7 @@ Here is a fully filled out parameters file.   Note that we did not include value
         },
         "wlsLDAPPrincipalPassword": {
             "value": "Secret123!"
-        }
+        },
         "wlsLDAPSSLCertificate": {
             "value": "MIIKQQIBAz....EkAgIIAA=="
         },
@@ -111,7 +111,7 @@ Here is a fully filled out parameters file.   Note that we did not include value
 
 ## Invoke the ARM template
 
-Assume your parameters file is available in the current directory and is named `parameters.json`.  This section shows the commands to configure your {{ site.data.var.wlsFullBrandName }} deployment with the specified database.  Replace `yourResourceGroup` with the Azure resource group in which the {{ site.data.var.wlsFullBrandName }} is deployed.
+Assume your parameters file is available in the current directory and is named `parameters.json`.  This section shows the commands to configure your {{ site.data.var.wlsFullBrandName }} deployment with the specified AAD.  Replace `yourResourceGroup` with the Azure resource group in which the {{ site.data.var.wlsFullBrandName }} is deployed.
 
 ### First, validate your parameters file
 
