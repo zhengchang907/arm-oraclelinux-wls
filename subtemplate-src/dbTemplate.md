@@ -12,7 +12,7 @@ This page documents how to configure an existing deployment of {{ site.data.var.
 
 ### WebLogic Server Instance
 
-The database ARM tempate will be applied to an existing {{ site.data.var.wlsFullBrandName }} instance.  If you don't have one, please create a new instance from the Azure portal, by following the link to the offer [in the index](index.md).
+The database ARM template will be applied to an existing {{ site.data.var.wlsFullBrandName }} instance.  If you don't have one, please create a new instance from the Azure portal, by following the link to the offer [in the index](index.md).
 
 ### Database Instance
 
@@ -23,7 +23,7 @@ create one from the Azure portal.
 
 ## Prepare the Parameters JSON file
 
-You must construct a parameters JSON file containing the parameters to the database ARM template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files.   We must specify the information of the exsiting {{ site.data.var.wlsFullBrandName }} and database instance. This section shows how to obtain the values for the following required properties.
+You must construct a parameters JSON file containing the parameters to the database ARM template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files.   We must specify the information of the existing {{ site.data.var.wlsFullBrandName }} and database instance. This section shows how to obtain the values for the following required properties.
 
 | Parameter Name | Explanation |
 |----------------|-------------|
@@ -42,7 +42,7 @@ You must construct a parameters JSON file containing the parameters to the datab
 
 This value must be the following.
 
-```
+```bash
 {{ armTemplateBasePath }}
 ```
 
@@ -74,13 +74,13 @@ Deploy an Azure Database PostgreSQL as described in [Create an Azure Database fo
 
 3. Locate the **JDBC** section and click the copy icon on the right to copy the JDBC connection string to the clipboard. The JDBC connection string will be similar to the following:
 
-```
+```bash
 jdbc:postgresql://20191015cbfgterfdy.postgres.database.azure.com:5432/{your_database}?user=jroybtvp@20191015cbfgterfdy&password={your_password}&sslmode=require
 ```
 
 When passing this value to the ARM template, remove the database user and password values from the connection string, and let them be the parameters `dbUser` and `dbPassword`. In the above JDBC connection string sample, the value for `dsConnectionURL` argument after removing the database user and password, will be:
 
-```
+```bash
 jdbc:postgresql://20191015cbfgterfdy.postgres.database.azure.com:5432/{your_database}?sslmode=require
 ```
 
@@ -102,7 +102,7 @@ jdbc:sqlserver://rwo102804.database.windows.net:1433;database=rwo102804;user=jro
 
 When passing this value to the ARM template, remove the database user and password values, let them be the parameters `dbUser` and `dbPassword`. In the above JDBC connection string sample, the value for `dsConnectionURL` argument after removing the database user and password, will be:
 
-```
+```bash
 jdbc:sqlserver://rwo102804.database.windows.net:1433;database={your_database};encrypt=true;tr
 ```
 
@@ -146,7 +146,7 @@ Here is a fully filled out parameters file.   Note that we did not include `admi
         }
     }
 }
-``` 
+```
 
 ## Invoke the ARM template
 
@@ -305,18 +305,15 @@ This is an example output of successful deployment.  Look for `"provisioningStat
   "resourceGroup": "oraclevm-admin-0602",
   "type": "Microsoft.Resources/deployments"
 }
-
 ```
 
 ## Verify Database Connection
 
 Follow the steps to check if the database has successfully been connected.
 
-- Visit the {{ site.data.var.wlsFullBrandName }} Admin console.
-- In the left navigation pane, expand the **Services** tree node and the **DataSources** child node.
-- Select the row for the JDBC database name, for example `jdbc/WebLogicDB`.
-- Select the **Monitoring** tab and the **Testing** sub-tab.
-- Select `admin` and select **Test Data Source**
-- If the database is enbaled, you will see a message similar to "Test of jdbc/WebLogicDB on server admin was successful."
-
-
+* Visit the {{ site.data.var.wlsFullBrandName }} Admin console.
+* In the left navigation pane, expand the **Services** tree node and the **DataSources** child node.
+* Select the row for the JDBC database name, for example `jdbc/WebLogicDB`.
+* Select the **Monitoring** tab and the **Testing** sub-tab.
+* Select `admin` and select **Test Data Source**
+* If the database is enabled, you will see a message similar to "Test of jdbc/WebLogicDB on server admin was successful."

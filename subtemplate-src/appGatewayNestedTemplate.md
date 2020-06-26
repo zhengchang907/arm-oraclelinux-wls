@@ -22,7 +22,7 @@ When deploying the {{ site.data.var.wlsFullBrandName }} offer from the Azure Por
 
 ## Prepare the Parameters JSON file
 
-You must construct a parameters JSON file containing the parameters to the database ARM template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files.   We must specify the information of the exsiting SSL certificate. This section shows how to obtain the values for the following required properties.
+You must construct a parameters JSON file containing the parameters to the database ARM template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files.   We must specify the information of the existing SSL certificate. This section shows how to obtain the values for the following required properties.
 
 | Parameter Name | Explanation |
 |----------------|-------------|
@@ -43,7 +43,7 @@ You must construct a parameters JSON file containing the parameters to the datab
 
 This value must be the following.
 
-```
+```bash
 {{ armTemplateBasePath }}
 ```
 
@@ -91,7 +91,7 @@ Here is a fully filled out parameters file.   Note that we did not include any o
         }
     }
 }
-``` 
+```
 
 ## Invoke the ARM template
 
@@ -337,7 +337,6 @@ This is an example output of successful deployment.  Look for `"provisioningStat
   "resourceGroup": "oraclevm-cluster-0604",
   "type": "Microsoft.Resources/deployments"
 }
-
 ```
 
 ## Verify Application Gateway
@@ -346,18 +345,18 @@ We will deploy a testing application to verify if the appliaction gateway is ena
 
 Go to Admin Server Console and deploy [webtestapp.war](../resources/webtestapp.war).
 
-- Visit the {{ site.data.var.wlsFullBrandName }} Admin console.
-- Select **Deployments**.
-- Select **Install**.
-- Select file `webtestapp.war`.
-- Select **Next**.  Choose "Install this deployment as an application".
-- Select **Next**. Select "cluster-1" and "All servers in the cluster".
-- Keep configuration as default and select **Finish**.
-- Select **Activate Changes**
-- In the left navigation pane, select **Deployments**.
-- Select **Control**
-- Select `webtestapp`
-- Select **Start**
-- Select **Servicing all requests**
+* Visit the {{ site.data.var.wlsFullBrandName }} Admin console.
+* Select **Deployments**.
+* Select **Install**.
+* Select file `webtestapp.war`.
+* Select **Next**.  Choose "Install this deployment as an application".
+* Select **Next**. Select "cluster-1" and "All servers in the cluster".
+* Keep configuration as default and select **Finish**.
+* Select **Activate Changes**
+* In the left navigation pane, select **Deployments**.
+* Select **Control**
+* Select `webtestapp`
+* Select **Start**
+* Select **Servicing all requests**
 
 Then access the application with `<appGatewayHost>/webtestapp`, you will get a page with server host information if application gateway was successfully enabled.

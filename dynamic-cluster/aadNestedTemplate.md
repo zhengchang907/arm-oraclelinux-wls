@@ -1,6 +1,8 @@
-# Enable Azure Active Directory in an Existing WebLogic Server with Admin Server Instance
+{% include variables.md %}
 
-This article introduces how to enable Azure Active Directory (AAD) to an existing WebLogic Server, with az cli.
+# Apply Azure Active Directory ARM Template to {{ site.data.var.wlsFullBrandName }}
+
+This page documents how to configure an existing deployment of {{ site.data.var.wlsFullBrandName }} with an existing Azure Active Directory Domain Service (AAD DS) using Azure CLI.
 
 ## Prerequisites
 
@@ -10,100 +12,130 @@ This article introduces how to enable Azure Active Directory (AAD) to an existin
 
 ### WebLogic Server Instance
 
-The AAD tempate will be applied to an existing WebLogic Server instance.  If you don't have one, please create a new instance from Azure portal, link to WebLogic offer is available from [Oracle WebLogic Server with Admin Server](https://portal.azure.com/#create/oracle.20191009-arm-oraclelinux-wls-admin20191009-arm-oraclelinux-wls-admin).  
+The AAD ARM template will be applied to an existing {{ site.data.var.wlsFullBrandName }} instance.  If you don't have one, please create a new instance from the Azure portal, by following the link to the offer [in the index](index.md).
 
 ### Azure Active Directory LDAP Instance
 
-To apply AAD to Weblogic Server, you must have an existing Azure Active Directory LDAP instance to use. If you don't have AAD LADP instance, please follow this [document](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/tutorial-configure-ldaps) to set up.
+To apply AAD to {{ site.data.var.wlsFullBrandName }}, you must have an existing Azure Active Directory LDAP instance to use. If you don't have AAD LADP instance, please follow the steps in the tutorial [Configure secure LDAP for an Azure Active Directory Domain Services managed domain](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/tutorial-configure-ldaps).
 
-### Download Template
+## Prepare the Parameters JSON file
 
-Download arm-oraclelinux-wls-admin-version-arm-assembly.zip from latest release. For example, the latest version is v1.0.20, download from this link: https://github.com/wls-eng/arm-oraclelinux-wls-admin/releases/download/v1.0.20/arm-oraclelinux-wls-admin-1.0.20-arm-assembly.zip.
+You must construct a parameters JSON file containing the parameters to the database ARM template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files.   We must specify the information of the existing {{ site.data.var.wlsFullBrandName }} and database instance. This section shows how to obtain the values for the following required properties.
 
-Unzip the ARM template to your local machine, we will run nestedtemplates/aadNestedTemplate.json to enable AAD.
+| Parameter Name | Explanation |
+|----------------|-------------|
+| `_artifactsLocation`| See below for details. |
+| `aadsPortNumber` | (optional) The LDAP port number, defaults to 636. | 
+| `aadsPublicIP` | The IP address of the LDAP server |
+| `aadsServerHost` | The hostname of the Active Directory Domain Services server. |
+| `adminPassword` | The password for the VM on which the {{ site.data.var.wlsFullBrandName }} admin server is running. | 
+| `adminVMName`| At deployment time, if this value was changed from its default value, the value used at deployment time must be used.  Otherwise, this parameter should be omitted. |
+| `location` | Must be the same region into which the server was initially deployed. |
+| `wlsDomainName` | The name of the {{ site.data.var.wlsFullBrandName }} domain. |
+| `wlsLDAPGroupBaseDN` | The base distinguished name (DN) of the tree in the LDAP directory that contains groups. |
+| `wlsLDAPPrincipalPassword` | The credential (usually a password) used to connect to the LDAP server. |
+| `wlsLDAPPrincipal` | The Distinguished Name (DN) of the LDAP user that {{ site.data.var.wlsFullBrandName }} should use to connect to the LDAP server. |
+| `wlsLDAPProviderName` | (optional) The value used for creating authentication provider name of WebLogic Server. |
+| `wlsLDAPSSLCertificate` | Client certificate that will be imported to trust store of SSL. |
+| `wlsLDAPSSLCertificate` | See below for details. |
+| `wlsLDAPUserBaseDN` | The base distinguished name (DN) of the tree in the LDAP directory that contains users. |
+| `wlsPassword` | Must be the same value provided at deployment time. |
+| `wlsUserName` | Must be the same value provided at deployment time. |
 
-## Run AAD Template
+### `_artifactsLocation`
 
-We need to specify information of exsiting WebLogic Server and AAD LDAP instance, please create parameters.json with the following variables, and change the value to yours.
+This value must be the following.
 
-Please note, 
-
-1. For `_artifactsLocation`, please use the default value, `https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls-admin/master/src/main/arm/`.
-
-2. For `wlsLDAPSSLCertificate`, please use base64 to encode you application gateway certificate, disable line wrapping and output to a file.  
-
+```bash
+{{ armTemplateBasePath }}
 ```
+
+### `wlsLDAPSSLCertificate`
+
+Use base64 to encode your existing SSL certificate.
+
+```bash
 base64 your-certificate.cer -w 0 >temp.txt
 ```
 
-```
+Use the content as this file as the value of the `wlsLDAPSSLCertificate` parameter.
+
+#### Example Parameters JSON
+
+Here is a fully filled out parameters file.   Note that we did not include values for parameters that have a default value.
+
+```json
 {
-    "_artifactsLocation": {
-        "value": "https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls-admin/master/src/main/arm/"
-    },
-    "location": {
-        "value": "<location>"
-    },
-    "aadsPortNumber": {
-        "value": "636"
-    },
-    "aadsPublicIP": {
-        "value": "<aad-ldap-server-ip>"
-    },
-    "aadsServerHost": {
-        "value": "<aad-ldap-server-host>"
-    },
-    "adminPassword": {
-        "value": "<admin-vm-password>"
-    },
-    "adminVMName": {
-        "value": "<admin-vm-name>"
-    },
-    "wlsDomainName": {
-        "value": "<wls-domain-name>"
-    },
-    "wlsLDAPGroupBaseDN": {
-        "value": "<group-base-dn>"
-    },
-    "wlsLDAPPrincipal": {
-        "value": "<principal>"
-    },
-    "wlsLDAPPrincipalPassword": {
-        "value": "<principal-password>"
-    },
-    "wlsLDAPProviderName": {
-        "value": "<provider-name>"
-    },
-    "wlsLDAPSSLCertificate": {
-        "value": "<certificate-base64-string>"
-    },
-    "wlsLDAPUserBaseDN": {
-        "value": "<user-base-dn>"
-    },
-    "wlsPassword": {
-        "value": "<wls-psw>"
-    },
-    "wlsUserName": {
-        "value": "<wls-user>"
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "_artifactsLocation": {
+            "value": "{{ armTemplateBasePath }}"
+        },
+        "aadsPublicIP": {
+            "value": "1.2.3.4"
+        },
+        "aadsServerHost": {
+           "value": "ladps.fabrikam.com"
+        },
+        "adminPassword": {
+           "value": "jyfRat@nht2019"
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "wlsLDAPGroupBaseDN": {
+            "value": "OU=AADDC Users,DC=fabrikam,DC=com"
+        },
+        "wlsLDAPPrincipal": {
+            "value": "CN=WLSTest,OU=AADDC Users,DC=fabrikam,DC=com"
+        },
+        "wlsLDAPPrincipalPassword": {
+            "value": "Secret123!"
+        }
+        "wlsLDAPSSLCertificate": {
+            "value": "MIIKQQIBAz....EkAgIIAA=="
+        },
+        "wlsLDAPUserBaseDN": {
+            "value": "OU=AADDC Users,DC=fabrikam,DC=com"
+        },
+        "wlsPassword": {
+          "value": "welcome1"
+        },
+        "wlsUserName": {
+          "value": "weblogic"
+        }
     }
 }
-``` 
-
-Run the following command to apply database service to your WebLogic Server.  
-
-```
-RESOURCE_GROUP=<resource-group-of-your-weblogic-server-instance>
-
-# cd nestedtemplates
-# Create parameters.json with above variables, and place it in the same folder with dbTemplate.json.
-az group deployment create --verbose --resource-group $RESOURCE_GROUP --name aad --parameters @parameters.json --template-file aadNestedTemplate.json
 ```
 
-You will not get any error if the AAD service is deployed successfully.
+## Invoke the ARM template
 
-This is an example output of successful deployment.  
+Assume your parameters file is available in the current directory and is named `parameters.json`.  This section shows the commands to configure your {{ site.data.var.wlsFullBrandName }} deployment with the specified database.  Replace `yourResourceGroup` with the Azure resource group in which the {{ site.data.var.wlsFullBrandName }} is deployed.
 
+### First, validate your parameters file
+
+The `az group deployment validate` command is very useful to validate your parameters file is syntactically correct.
+
+```bash
+az group deployment validate --verbose --resource-group `yourResourceGroup` --parameters @parameters.json --template-uri {{ armTemplateBasePath }}nestedtemplates/aadNestedTemplate.json
 ```
+
+If the command returns with an exit status other than `0`, inspect the output and resolve the problem before proceeding.  You can check the exit status by executing the commad `echo $?` immediately after the `az` command.
+
+### Next, execute the template
+
+After successfully validating the template invocation, change `validate` to `create` to invoke the template.
+
+```bash
+az group deployment create --verbose --resource-group `yourResourceGroup` --parameters @parameters.json --template-uri {{ armTemplateBasePath }}nestedtemplates/aadNestedTemplate.json
+```
+
+As with the validate command, if the command returns with an exit status other than `0`, inspect the output and resolve the problem.
+
+This is an example output of successful deployment.  Look for `"provisioningState": "Succeeded"` in your output.
+
+```json
 {
   "id": "/subscriptions/05887623-95c5-4e50-a71c-6e1c738794e2/resourceGroups/oraclevm-admin-06082/providers/Microsoft.Resources/deployments/cli",
   "location": null,
@@ -198,7 +230,7 @@ This is an example output of successful deployment.
       },
       "wlsLDAPSSLCertificate": {
         "type": "String",
-        "value": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tDQpNSUlERkRDQ0FmeWdBd0lCQWdJUVpIbnRHT3Z5RzVSRmVTVzl5TERGQVRBTkJna3Foa2lHOXcwQkFRc0ZBREFkDQpNUnN3R1FZRFZRUUREQklxTG5kc2N5MXpaV04xY21sMGVTNWpiMjB3SGhjTk1qQXdNakkzTWpNd016QTNXaGNODQpNakV3TWpJM01qTXlNekEzV2pBZE1Sc3dHUVlEVlFRRERCSXFMbmRzY3kxelpXTjFjbWwwZVM1amIyMHdnZ0VpDQpNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0SUJEd0F3Z2dFS0FvSUJBUURDOG9TZ0pMWi9jdWtRNVVVTytZeCtrUzZGDQo5UVF3ditOU0FrTmZFSG1ld1V1Q0EwTnRCY0duOExYYzJNZ1VHSHJmMTNxbiszeDlkeS9GQ1U5WHRXVTJjd0UwDQppbTRMaWlxbWxQdlliVVArVGFjN1RkMUR1UHg3NVFScm8rS1hGVys1OTJpWUl6ZVNPQi9iQXNGK3JQNWRuUmMwDQo0UjdITDVtWUZOWThpWHVTUEJPUCtpUFNlWjduUmxBMEJOa1JNVmxsSXAyZ2xHZk9uY01uRlYweHdqaHcwNFNpDQpBbVFqVGE2YmJtRU5HVWdNVTFmSG5aSFVHREY0S09SQS8zc1dTckcxOHVvQjkwNzQzNTRxM3piYzZmNVRFdU9yDQp5UGNrNTA2WjNPdEd5b0JzVXFzdzFSb2ZZdDNVbDBtWWJMMDlIUzU3QmIxODVzRFNpSFZyRlF6Wm9ibkJBZ01CDQpBQUdqVURCT01BNEdBMVVkRHdFQi93UUVBd0lGb0RBZEJnTlZIU1VFRmpBVUJnZ3JCZ0VGQlFjREFnWUlLd1lCDQpCUVVIQXdFd0hRWURWUjBPQkJZRUZBeE55MUFvWXZuVVBxQXUyQ2FWcnBROE5BLy9NQTBHQ1NxR1NJYjNEUUVCDQpDd1VBQTRJQkFRQTdJclNXaXZCTkRMMmFkcGpiMnNjcmFQenRtVm9yZ2pWbWY5OTdBUzM4SUJ0R2tXZkttTHlGDQpPZUkzS0g3WFIvUDA5cDBFTDNmNDgrTUJtMnhZTDlGV3RRdlcxckhGTzdOOU5qWHFQbXpxc1ZFelNIQVBHS2JIDQpJSUh1dmFYOHZOZ1lJb2lrNk5DMHFucWhCTUlBWmJEOVlaU0g3SGhzdmRna0tFWXdaRThOY2JkaVFSTEI4Z3NEDQp4WWhWY0E0Y0h2OUR0aWFhSXZodEt3U2x0SzdwQXR1aG5IS2tUZ2VQVVVWNWJyRm5IM1FpbS9WT21SSG1qZjdODQpmTFZER005ZStFRUtwaW5ETDB3c0VLSzh1Nm9hbTRLUHdYNXo0T0ljR3VXWkdlMGJQejlHRVZOR0xyY1pTSG8vDQpHNHRoUFZ5Q0VqOURlUUJzcW05b1N6TFFNV0ZRU2xkZw0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ0K"
+        "value": "LS0tLS1...LQ0K"
       },
       "wlsLDAPUserBaseDN": {
         "type": "String",
@@ -267,10 +299,8 @@ This is an example output of successful deployment.
 
 Follow the steps to check if AAD is enabled.
 
-* Go to WebLogic Admin Server Console,  you can find it from output of WebLogic Instance deployment.
-* Go to Security Realms -> myrealm -> Providers, you will find AAD provider e.g. `AzureActiveDirectoryProvider`
-* Go to Security Realms -> myrealm -> Users and Groups, you will find users from AAD provider.
-* Otherwise, AAD integration fails.
-
-
-
+* Visit the {{ site.data.var.wlsFullBrandName }} Admin console.
+* In the left navigator, expand the tree to select **Security Realms** -> **myrealm** -> **Providers**.
+* If the integration was successful, you will find the AAD provider for example `AzureActiveDirectoryProvider`.
+* In the left navigator, expand the tree to select **Security Realms** -> **myrealm** -> **Users and Groups**.
+* If the integration was successful, you will find users from the AAD provider.
