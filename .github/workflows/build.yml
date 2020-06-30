@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
   schedule:
       - cron:  '0 7 * * *'
   repository_dispatch:
@@ -15,13 +12,11 @@ env:
   azCliVersion: 2.0.72
   location: eastus
   nsg: wls-nsg
-  otnAccountPassword: ${{ secrets.OTN_PASSWORD }}
-  otnAccountUsername: ${{ secrets.OTN_USERID }}
-  resourceGroup: wls-${{ github.run_id }}-${{ github.run_number }}
+  resourceGroupPrefix: wls-${{ github.run_id }}-${{ github.run_number }}
   wlsPassword: ${{ secrets.WLS_PASSWORD }}
     
 jobs:
-  build:
+  preflight:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout azure-javaee-iaas
@@ -53,114 +48,7 @@ jobs:
         run: mvn -DskipTests clean install --file azure-javaee-iaas/pom.xml
       - name: Build and test arm-oraclelinux-wls
         run: mvn -Ptemplate-validation-tests clean install --file arm-oraclelinux-wls/pom.xml
-
-      - uses: azure/login@v1
-        id: azure-login
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Create Resource Group
-        id: create-resource-group
-        uses: azure/CLI@v1
-        with:
-          azcliversion: ${{ env.azCliVersion }}
-          inlineScript: |
-            az group create --verbose --name ${{ env.resourceGroup }} --location ${location}
-
-      - name: Prepare deployed parameters and test script
-        id: prepare-deployed-parameters-and-test-script
-        run: |
-         sed -i "s/#otnAccountUsername#/$otnAccountUsername/g; \
-          s/#otnAccountPassword#/$otnAccountPassword/g; \
-          s/#location#/$location/g; \
-          s/#adminPasswordOrKey#/$wlsPassword/g" \
-          arm-oraclelinux-wls/test/data/parameters-test.json
-         sed -i "s/#adminPasswordOrKey#/$wlsPassword/g" \
-          arm-oraclelinux-wls/test/scripts/verify-wls-path.sh
-
-      - name: Deploy WebLogic Server Single Node offer
-        id: deploy-wls
-        uses: azure/CLI@v1
-        with:
-          azcliversion: ${{ env.azCliVersion }}
-          inlineScript: |
-            az group deployment create \
-              --verbose \
-              --resource-group ${{ env.resourceGroup }} \
-              --name wls-single-node \
-              --parameters @arm-oraclelinux-wls/test/data/parameters-test.json \
-              --template-file arm-oraclelinux-wls/target/arm/mainTemplate.json
-
-      - name: Verify Network Security Group
-        id: verify-nsg
-        uses: azure/CLI@v1
-        with:
-          azcliversion: ${{ env.azCliVersion }}
-          inlineScript: |
-            echo "query nsg name, will exit with error if nsg does not exist."
-            az network nsg show -g ${{ env.resourceGroup }} -n ${nsg} --query "name"
-
-      - name: Get IP of build machine
-        id: get-ip-address
-        run: |
-          myIP=$(dig @ns1.google.com TXT o-o.myaddr.l.google.com +short)
-          echo "##[set-env name=myIP;]${myIP}"
-
-      - name: Add ip address to security rule to access the wls machine
-        id: add-ip-to-security-rule
-        uses: azure/CLI@v1
-        with:
-          azcliversion: ${{ env.azCliVersion }}
-          inlineScript: |
-            echo "query existing source address prefixes"
-            sourceAddressPrefixes=$(az network nsg rule show \
-              --resource-group ${{ env.resourceGroup }} \
-              --nsg-name wls-nsg \
-              --name NRMS-Rule-101 \
-              --query "sourceAddressPrefixes")
-            echo "IP of this machine: " ${myIP}
-            sourceAddressPrefixes=$(echo ${myIP} ${sourceAddressPrefixes} | \
-              sed 's/,/ /g; s/\[//g; s/\]//g; s/"//g')
-            echo ${sourceAddressPrefixes}
-            az network nsg rule update \
-              --resource-group ${{ env.resourceGroup }} \
-              --nsg-name wls-nsg \
-              --name NRMS-Rule-101 \
-              --source-address-prefixes $sourceAddressPrefixes \
-              --destination-port-ranges 443 22
-
-      - name: Restart wls VM
-        id: restart-wls-wm
-        uses: azure/CLI@v1
-        with:
-          azcliversion: ${{ env.azCliVersion }}
-          inlineScript: |
-            echo "restart vm to make sure security rule work."
-            az vm restart -g ${{ env.resourceGroup }} -n WebLogicServerVM
-    
-      - name: Query public IP of WebLogic Server VM
-        id: query-wls-machine-ip
-        uses: azure/CLI@v1
-        with:
-          azcliversion: ${{ env.azCliVersion }}
-          inlineScript: |
-            echo "query public ip"
-            publicIP=$(az vm show \
-              --resource-group ${{ env.resourceGroup }} \
-              --name WebLogicServerVM -d \
-              --query publicIps -o tsv)
-            echo "VM Public IP ${publicIp}"
-            echo "##[set-env name=wlsPublicIP;]${publicIP}"
-      
-      - name: Verify WebLogic Server
-        id: verify-wls
-        run: |
-          echo "pubilc IP of wls machine:" ${wlsPublicIP}
-          echo "test port..."
-          timeout 6m sh -c 'until nc -zv $0 $1; do echo "nc rc: $?"; sleep 5; done' ${wlsPublicIP} 22
-          echo "check if /u01/app/wls/install/Oracle/Middleware/Oracle_Home/wlserver/modules exists, the step will fail if not."
-          result=$(sshpass -p ${wlsPassword} -v ssh -p 22 -o StrictHostKeyChecking=no -o ConnectTimeout=1000 -v -tt weblogic@${wlsPublicIP} 'bash -s' < arm-oraclelinux-wls/test/scripts/verify-wls-path.sh)
-          echo $result
+     
       - name: Get version information from pom.xml
         id: get-version
         run: |
@@ -189,19 +77,160 @@ jobs:
           name: ${{steps.artifact_file.outputs.artifactName}}
           path: ${{steps.artifact_file.outputs.artifactPath}}
 
-  
-  cleanup:
-    needs: build
-    if: always()
+  deploy:
+    needs: preflight
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+          images: ["owls-122130-8u131-ol73;Oracle:weblogic-122130-jdk8u131-ol73:owls-122130-8u131-ol7;1.1.6", "owls-122130-8u131-ol74;Oracle:weblogic-122130-jdk8u131-ol74:owls-122130-8u131-ol7;1.1.1", "owls-122140-8u251-ol76;Oracle:weblogic-122140-jdk8u251-ol76:owls-122140-8u251-ol7;1.1.1", "owls-141100-8u251-ol76;Oracle:weblogic-141100-jdk8u251-ol76:owls-141100-8u251-ol7;1.1.1", "owls-141100-11_07-ol76;Oracle:weblogic-141100-jdk11_07-ol76:owls-141100-11_07-ol7;1.1.1"]
+
     steps:
+      - name: Checkout arm-oraclelinux-wls
+        uses: actions/checkout@v2
+        with:
+          path: arm-oraclelinux-wls
+      - name: Get version information from arm-oraclelinux-wls/pom.xml
+        id: version
+        run: echo "##[set-env name=version;]$(awk '/<version>[^<]+<\/version>/{gsub(/<version>|<\/version>/,"",$1);print $1;exit;}' arm-oraclelinux-wls/pom.xml)"
+      - name: Output artifact name for Download action
+        id: artifact_file
+        run: echo "##[set-output name=artifactName;]arm-oraclelinux-wls-$version-arm-assembly"
+      - name: Download artifact for deployment
+        uses: actions/download-artifact@v1
+        with:
+          name: ${{steps.artifact_file.outputs.artifactName}}
+
       - uses: azure/login@v1
+        id: azure-login
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Delete Resource Group
-        id: delete-resource-group
+      - name: Get Image SKU
+        id: image-sku
+        run: |
+          imageUrn="${{ matrix.images }}"
+          sku=${imageUrn%%;*}
+          echo "##[set-env name=sku;]${sku}"
+      - name: Create Resource Group
+        id: create-resource-group
         uses: azure/CLI@v1
         with:
           azcliversion: ${{ env.azCliVersion }}
           inlineScript: |
-            az group delete --yes --no-wait --verbose --name ${{ env.resourceGroup }}
+            resourceGroup=${{ env.resourceGroupPrefix }}-${sku}
+            echo "create resource group" $resourceGroup
+            echo "##[set-env name=resourceGroup;]${resourceGroup}"
+            az group create --verbose --name $resourceGroup --location ${location}
+
+      - name: Prepare deployed parameters and test script
+        id: prepare-deployed-parameters-and-test-script
+        run: |
+         sed -i "s/#skuUrnVersion#/${{ matrix.images }}/g; \
+          s/#location#/$location/g; \
+          s/#adminPasswordOrKey#/$wlsPassword/g" \
+          arm-oraclelinux-wls/test/data/parameters-test.json
+         sed -i "s/#adminPasswordOrKey#/$wlsPassword/g" \
+          arm-oraclelinux-wls/test/scripts/verify-wls-path.sh
+
+      - name: Deploy WebLogic Server Single Node offer
+        id: deploy-wls
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.azCliVersion }}
+          inlineScript: |
+            az group deployment create \
+              --verbose \
+              --resource-group ${resourceGroup} \
+              --name wls-single-node \
+              --parameters @arm-oraclelinux-wls/test/data/parameters-test.json \
+              --template-file arm-oraclelinux-wls-$version-arm-assembly/mainTemplate.json
+
+      - name: Verify Network Security Group
+        id: verify-nsg
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.azCliVersion }}
+          inlineScript: |
+            echo "query nsg name, will exit with error if nsg does not exist."
+            az network nsg show -g ${resourceGroup} -n ${{ env.nsg }} --query "name"
+
+      - name: Get IP of build machine
+        id: get-ip-address
+        run: |
+          myIP=$(dig @ns1.google.com TXT o-o.myaddr.l.google.com +short)
+          echo "##[set-env name=myIP;]${myIP}"
+
+      - name: Add ip address to security rule to access the wls machine
+        id: add-ip-to-security-rule
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.azCliVersion }}
+          inlineScript: |
+            echo "query existing source address prefixes"
+            attempts=0
+            while [ -z `az network nsg show -g $resourceGroup -n ${nsg} | grep "NRMS-Rule-101"` ] && [ $attempts -lt 20 ];
+            do
+              echo "network security group rule NRMS-Rule-101 is not ready"
+              attempts=$((attempts + 1))
+              sleep 1m
+            done
+
+            sourceAddressPrefixes=$(az network nsg rule show \
+              --resource-group ${resourceGroup} \
+              --nsg-name ${{ env.nsg }} \
+              --name NRMS-Rule-101 \
+              --query "sourceAddressPrefixes")
+            echo "IP of this machine: " ${myIP}
+            sourceAddressPrefixes=$(echo ${myIP} ${sourceAddressPrefixes} | \
+              sed 's/,/ /g; s/\[//g; s/\]//g; s/"//g')
+            echo ${sourceAddressPrefixes}
+            az network nsg rule update \
+              --resource-group ${resourceGroup} \
+              --nsg-name ${{ env.nsg }} \
+              --name NRMS-Rule-101 \
+              --source-address-prefixes $sourceAddressPrefixes \
+              --destination-port-ranges 443 22
+
+      - name: Restart wls VM
+        id: restart-wls-wm
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.azCliVersion }}
+          inlineScript: |
+            echo "restart vm to make sure security rule work."
+            az vm restart -g ${resourceGroup} -n WebLogicServerVM
+    
+      - name: Query public IP of WebLogic Server VM
+        id: query-wls-machine-ip
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.azCliVersion }}
+          inlineScript: |
+            echo "query public ip"
+            publicIP=$(az vm show \
+              --resource-group ${resourceGroup} \
+              --name WebLogicServerVM -d \
+              --query publicIps -o tsv)
+            echo "VM Public IP ${publicIp}"
+            echo "##[set-env name=wlsPublicIP;]${publicIP}"
+      
+      - name: Verify WebLogic Server
+        id: verify-wls
+        run: |
+          echo "pubilc IP of wls machine:" ${wlsPublicIP}
+          echo "test port..."
+          timeout 6m sh -c 'until nc -zv $0 $1; do echo "nc rc: $?"; sleep 5; done' ${wlsPublicIP} 22
+          echo "check if /u01/app/wls/install/oracle/middleware/oracle_home/wlserver/modules exists, the step will fail if not."
+          result=$(sshpass -p ${wlsPassword} -v ssh -p 22 -o StrictHostKeyChecking=no -o ConnectTimeout=1000 -v -tt weblogic@${wlsPublicIP} 'bash -s' < arm-oraclelinux-wls/test/scripts/verify-wls-path.sh)
+          echo $result
+
+      - name: Delete Resource Group
+        id: delete-resource-group
+        if: always()
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.azCliVersion }}
+          inlineScript: |
+            echo "delete... " $resourceGroup
+            az group delete --yes --no-wait --verbose --name $resourceGroup
