@@ -84,6 +84,9 @@ Here is a fully filled out parameters file.   Note that we did not include value
         "location": {
             "value": "eastus"
         },
+        "wlsDomainName": {
+          "value": "adminDomain"
+        },
         "wlsLDAPGroupBaseDN": {
             "value": "OU=AADDC Users,DC=fabrikam,DC=com"
         },
