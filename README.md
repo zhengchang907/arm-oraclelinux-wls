@@ -19,6 +19,12 @@ Apart from the basic offering, the following are few of the other single/multino
 -	Oracle WebLogic Server N-Node cluster
 -	Oracle WebLogic Server N-Node dynamic cluster
 
+---
+
+![WebLogic Server Azure Marketplace UI Flow](images/wls-on-azure.gif)
+
+---
+
 Each of these Azure Marketplace WebLogic Server Offerings also have their corresponding github repositories, where in the arm templates can be used to deploy the offering directly from the Azure CLI or Azure Powershell.
 
 The following are the corresponding github repositories:
