@@ -42,6 +42,15 @@
 
 * Azure AD DS integration does not work for WebLogic Server 14.
 
+### Source Tags and Marketplace Bundle Versions
+
+| Repository Name | GitHub Tag Link | Corresponding Marketplace Bundle Version |
+|-----------------|-----------------|------------------------------------------|
+| arm-oracle-linux-wls | [v1.0.0](https://github.com/wls-eng/arm-oraclelinux-wls/releases/tag/v1.0.0) | 1.0.17 |
+| arm-oraclelinux-wls-admin | [v1.0.0](https://github.com/wls-eng/arm-oraclelinux-wls-admin/releases/tag/v1.0.0) | 1.0.21 |
+| arm-oraclelinux-wls-cluster | [v1.0.0](https://github.com/wls-eng/arm-oraclelinux-wls-cluster/releases/tag/v1.0.0) | 1.0.290000 |
+| arm-oraclelinux-wls-dynamic-cluster | [v1.0.0](https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster/releases/tag/v1.0.0) | 1.0.19 |
+
 -----------------------------------------------------------------
 
 ## 2019-Q4
@@ -71,3 +80,13 @@
 * Dynamic cluster with arbitrary number of nodes.
 
 * Database integration via script execution on admin server.
+
+### Source Tags and Marketplace Bundle Versions
+
+| Repository Name | GitHub Tag Link | Corresponding Marketplace Bundle Version |
+|-----------------|-----------------|------------------------------------------|
+| arm-oracle-linux-wls | [v0.5.0](https://github.com/wls-eng/arm-oraclelinux-wls/tree/v0.5.0) | 1.0.16 |
+| arm-oraclelinux-wls-admin | [v0.5.0](https://github.com/wls-eng/arm-oraclelinux-wls-admin/tree/v0.5.0) | 1.0.14 |
+| arm-oraclelinux-wls-cluster | [v0.5.0](https://github.com/wls-eng/arm-oraclelinux-wls-cluster/tree/v0.5.0) | 1.0.17 |
+| arm-oraclelinux-wls-dynamic-cluster | [v0.5.0](https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster/tree/v0.5.0) | 1.0.11 |
+
