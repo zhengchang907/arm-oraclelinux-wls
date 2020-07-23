@@ -16,7 +16,7 @@ The template will be applied to an existing {{ site.data.var.wlsFullBrandName }}
 
 ## Prepare the Parameters JSON file
 
-You must construct a parameters JSON file containing the parameters to the delete-node ARM template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files.   You must specify the information of the existing {{ site.data.var.wlsFullBrandName }} and nodes that to be deleted. This section shows how to obtain the values for the following required properties.
+You must construct a parameters JSON file containing the parameters to the delete-node ARM template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files.   You must specify the information of the existing {{ site.data.var.wlsFullBrandName }} and nodes to be deleted. This section shows how to obtain the values for the following required properties.
 
 | Parameter Name | Explanation |
 |----------------|-------------|
@@ -37,7 +37,7 @@ This value must be the following.
 
 ### `deletingManagedServerNames`
 
-This value must be array, for example: ["msp1", "msp2"].
+This value must be an array of strings, for example: `["msp1", "msp2"]`.
 
 You can get the server names from WebLogic Server Administration Console, following the steps:
 
@@ -45,13 +45,13 @@ You can get the server names from WebLogic Server Administration Console, follow
 
 * Go to  **Environment** -> **Servers**. 
 
-  You will find all available servers. Server names are listed in "Name" column. 
+  You will find all available servers. Server names are listed in **Name** column. 
 
   Make note of the machine for the deleting servers, you need to find out corresponding Azure Virtual Machine names of those machines.
 
 ### `deletingManagedServerMachineNames`
 
-This value must be array, for example: ["mspVM1", "mspVM2"].
+This value must be an array of strings, for example: `["mspVM1", "mspVM2"]`.
 
 You can get the server names from WebLogic Server Administration Console, following the steps:
 
@@ -67,7 +67,7 @@ You can get the server names from WebLogic Server Administration Console, follow
 
 #### Example Parameters JSON
 
-Here is a fully filled out parameters file.   Note that here did not include `adminVMName`.
+Here is a fully filled out parameters file.   Note that here we do not include `adminVMName`.
 
 ```json
 {
@@ -95,7 +95,7 @@ Here is a fully filled out parameters file.   Note that here did not include `ad
 
 ## Invoke the delete-node script
 
-To delete managed nodes completely, you have to delete managed servers logically from WebLogic Server instance, and physically release Azure resources that host the managed servers.  We realize the two purposes in different ways:
+To delete managed nodes completely, you have to delete managed servers logically from the WebLogic Server instance, and physically release Azure resources that host the managed servers.  We realize the two purposes in different ways:
   * Delete managed servers and machines logically from WebLogic Server instance by deploying delete-node ARM template with Azure CLI. You have to specify the parameters file.
   * Release corresponding Azure resources by running Azure CLI commands. The following resources will be removed:
     * Virtual Machines that host managed servers that will be deleted.
