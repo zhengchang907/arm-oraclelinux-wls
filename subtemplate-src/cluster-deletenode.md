@@ -107,33 +107,12 @@ To delete managed nodes completely, you have to delete managed servers logically
 
 We have provided an automation script for above two purposes, you can delete managed nodes easily with the following instructions.
 
-### Download the script
-
-After running the following command, you will get a shell script with name `deletenode-cli.sh`.
-
-```bash
-$ curl -LO {{ armTemplateDeleteNodeBasePath }}scripts/deletenode-cli.sh
-```
-
-Usage of the script:
-
-```bash
-$ ./deletenode-cli.sh -h
-usage: deletenode-cli.sh -g resource-group [-f template-file] [-u template-url] -p paramter-file [-h]
-  -g Azure Resource Group of the Vitural Machines that host deleting manages servers, must be specified.
-  -f Path of ARM template to delete nodes, must be specified -f option or -u option.
-  -u URL of ARM template, must be specified -f option or -u option.
-  -p Path of ARM parameter, must be specified.
-  -h Help
-
-```
-
 ### Invoke the script
 
 Assume your parameters file is available in the current directory and is named `parameters.json`.  Replace `yourResourceGroup` with the Azure resource group in which the {{ site.data.var.wlsFullBrandName }} is deployed.
 
 ```bash
-$ ./deletenode-cli.sh -g yourResourceGroup -u {{ armTemplateDeleteNodeBasePath }}arm/mainTemplate.json -p parameters.json
+$ curl -fsSL https://raw.githubusercontent.com/edburns/arm-oraclelinux-wls-cluster/2020-06-24-01-Q2/deletenode/src/main/scripts/deletenode-cli.sh | /bin/bash -s -- -g yourResourceGroup -u https://raw.githubusercontent.com/edburns/arm-oraclelinux-wls-cluster/2020-06-24-01-Q2/deletenode/src/main/arm/mainTemplate.json -p params.json
 ```
 
 The script will validate the template with your parameters file; deploy the template to delete managed servers from WebLogic Server cluster; run Azure CLI commands to delete corresponding Azure resources.
