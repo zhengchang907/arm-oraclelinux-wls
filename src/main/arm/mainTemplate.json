@@ -298,6 +298,8 @@
          }
       },
       {
+         "apiVersion": "${azure.apiVersion}",
+         "name": "${end}",
          "type": "Microsoft.Resources/deployments",
          "apiVersion": "${azure.apiVersion}",
          "name": "${end}",
@@ -314,6 +316,8 @@
          }
       },
       {
+         "apiVersion": "${azure.apiVersion}",
+         "name": "${from.owls-122130-jdk8-ol74}",
          "type": "Microsoft.Resources/deployments",
          "apiVersion": "${azure.apiVersion}",
          "name": "${from.owls-122130-jdk8-ol74}",
@@ -332,6 +336,8 @@
          }
       },
       {
+         "apiVersion": "${azure.apiVersion}",
+         "name": "${from.owls-122130-jdk8-ol73}",
          "type": "Microsoft.Resources/deployments",
          "apiVersion": "${azure.apiVersion}",
          "name": "${from.owls-122130-jdk8-ol73}",
@@ -350,6 +356,8 @@
          }
       },
       {
+         "apiVersion": "${azure.apiVersion}",
+         "name": "${from.owls-122140-jdk8-ol76}",
          "type": "Microsoft.Resources/deployments",
          "apiVersion": "${azure.apiVersion}",
          "name": "${from.owls-122140-jdk8-ol76}",
@@ -368,6 +376,8 @@
          }
       },
       {
+         "apiVersion": "${azure.apiVersion}",
+         "name": "${from.owls-141100-jdk8-ol76}",
          "type": "Microsoft.Resources/deployments",
          "apiVersion": "${azure.apiVersion}",
          "name": "${from.owls-141100-jdk8-ol76}",
@@ -386,6 +396,8 @@
          }
       },
       {
+         "apiVersion": "${azure.apiVersion}",
+         "name": "${from.owls-141100-jdk11-ol76}",
          "type": "Microsoft.Resources/deployments",
          "apiVersion": "${azure.apiVersion}",
          "name": "${from.owls-141100-jdk11-ol76}",
