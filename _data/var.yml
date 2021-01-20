@@ -9,5 +9,5 @@ oracleLinuxVersion: 7.4
 jdkVersion: Oracle JDK 8u131
 jdkVersionNumber: jdk1.8.0_131
 repoPrefix: /arm-oraclelinux-wls-
-artifactsLocationBase: https://raw.githubusercontent.com/wls-eng/arm-oraclelinux-wls-
-artifactsLocationTag: 2020-12-02-01-Q4
+artifactsLocationBase: https://raw.githubusercontent.com/zhengchang907/arm-oraclelinux-wls-
+artifactsLocationTag: 2021-01-20-zheng-test
