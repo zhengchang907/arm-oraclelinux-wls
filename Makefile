@@ -18,5 +18,4 @@ all:
 	cp subtemplate-src/cluster-elkNestedTemplate.md cluster/elkNestedTemplate.md
 	cp subtemplate-src/dynamic-cluster-elkNestedTemplate.md dynamic-cluster/elkNestedTemplate.md
 	cp subtemplate-src/customDNSTemplate.md cluster/customDNSTemplate.md
-
-
+	cp subtemplate-src/nsgRulesTemplate.md cluster

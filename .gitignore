@@ -11,3 +11,4 @@ _site
 Gemfile.lock
 .sass-cache
 arm-oraclelinux-wls
+.classpath
