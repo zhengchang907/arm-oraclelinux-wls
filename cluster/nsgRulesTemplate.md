@@ -12,11 +12,11 @@ This page documents how to append addtional security rules to an existing Azure 
 
 ### Azure Network Security Group
 
-The Azure Network Security Rule ARM template will be applied to an existing Azure Network Security Group instance. If you don't have one, please create a new instance from the Azure portal, by following the link to the offer [in the index](index.md).
+The Azure Network Security Rule ARM template will be applied to an existing Azure Network Security Group (NSG) instance. If you don't have one, please create a new instance from the Azure portal, by following the link to the offer [in the index](index.md).
 
 ### Prepare the Parameters JSON file
 
-You must construct a parameter JSON file containing the parameters to the NSG template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files. We must declear the options how we want to append the rules to the NSG.
+You must construct a parameter JSON file containing the parameters to the NSG template.  See [Create Resource Manager parameter file](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files) for background information about parameter files. The options to this template declare the desired configuration of the NSG.
 
 | Parameter Name | Description |
 | `denyPublicTrafficForAdminServer` | Deny public tranffic for the admin server on port 7001, 7002. |
@@ -51,7 +51,7 @@ Here is a fully filled out parameters file, assuming the {{ site.data.var.wlsFul
 
 ## Invoke the ARM template
 
-This section shows how to kick off the deployment step-by-step. After the deployment, your existing Network Security Group will append two additional Inbound Rules for admin and managed servers. Here we assume you have the parameter file in the current directory and is named `parameters.json`, and your Network Security Group is named `wls-nsg`. Don't forget to replace `yourResourceGroup` with the Azure resource group in which the Network Security Group is created.
+This section shows how to kick off the deployment step-by-step. After the deployment, your existing NSG will append two additional Inbound Rules for admin and managed servers. Here we assume you have the parameter file in the current directory, the file is named `parameters.json`, and your NSG is named `wls-nsg`. Don't forget to replace `yourResourceGroup` with the Azure resource group in which the NSG is created.
 
 ### First, validate your parameters file
 
