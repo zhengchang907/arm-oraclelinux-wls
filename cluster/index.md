@@ -20,4 +20,6 @@ Templates available for working with [{{ site.data.var.wlsFullBrandName }} Clust
 
 * [Configure Elasticsearch and Kibana](elkNestedTemplate.md)
 
+* [Configure Azure Network Security Group rules](nsgRulesTemplate.md)
+
 * [Delete nodes](deletenode.md)
