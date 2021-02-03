@@ -42,6 +42,8 @@ Any Issue related to Oracle WebLogic on Microsoft Azure implementation is tracke
 This is a common issue tracker and tracks all issues across all the WebLogic Server offerings 
 
 ## Workflow Tracker
+
+This section tracks Github Actions configured for each offer repo, 'Build and Test' and 'New Tag' are two different workflows.
 |  Offer Repo 	|   Build and Test	| New Tag |
 |---	|---	|---	|
 | [Single Node](https://github.com/wls-eng/arm-oraclelinux-wls)| [Build and Test](https://github.com/wls-eng/arm-oraclelinux-wls/actions?query=workflow%3A%22Build+and+Test%22) ![Build and Test](https://github.com/wls-eng/arm-oraclelinux-wls/workflows/Build%20and%20Test/badge.svg)| [New Tag](https://github.com/wls-eng/arm-oraclelinux-wls/actions?query=workflow%3A%22New+Tag%22) ![New Tag](https://github.com/wls-eng/arm-oraclelinux-wls/workflows/New%20Tag/badge.svg) |
