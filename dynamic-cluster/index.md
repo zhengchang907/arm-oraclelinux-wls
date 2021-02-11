@@ -20,5 +20,7 @@ Templates available for working with [{{ site.data.var.wlsFullBrandName }} Dynam
 
 * [Configure Azure Network Security Group rules](nsgRulesTemplate.md)
 
+* [Configure Oracle HTTP Server load balancer](ohsNestedTemplate.md)
+
 * [Delete nodes](deletenode.md)
 
