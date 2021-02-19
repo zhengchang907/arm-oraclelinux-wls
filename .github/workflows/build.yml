@@ -121,15 +121,16 @@ jobs:
         id: check-if-succeed
         if: ${{ success() }}
         run: |
-            ${{ env.azCliVersion }}= $((${{ env.azCliVersion }}+1))
+            ${{ env.succeedKeyJobNum }}= $((${{ env.succeedKeyJobNum }}+1))
 
 
   summary:
+    needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: summarize jobs
         run: |
-            echo ${{ env.azCliVersion }}
+            echo ${{ env.succeedKeyJobNum }}
 
       # - name: Create Resource Group
       #   id: create-resource-group
