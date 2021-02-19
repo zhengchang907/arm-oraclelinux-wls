@@ -13,7 +13,6 @@ env:
   nsg: wls-nsg
   resourceGroupPrefix: wls-${{ github.run_id }}-${{ github.run_number }}
   wlsPassword: ${{ secrets.WLS_PASSWORD }}
-  succeedKeyJobNum: 0
     
 jobs:
   preflight:
@@ -121,7 +120,7 @@ jobs:
         id: check-if-succeed
         if: ${{ success() }}
         run: |
-            ${{ env.succeedKeyJobNum }}= $((${{ env.succeedKeyJobNum }}+1))
+            echo "env.succeedKeyJobNum=$(($GITHUB_ENV.succeedKeyJobNum+1))" >> $GITHUB_ENV
 
 
   summary:
@@ -130,7 +129,7 @@ jobs:
     steps:
       - name: summarize jobs
         run: |
-            echo ${{ env.succeedKeyJobNum }}
+            echo $GITHUB_ENV.succeedKeyJobNum
 
       # - name: Create Resource Group
       #   id: create-resource-group
