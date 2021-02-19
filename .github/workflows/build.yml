@@ -121,7 +121,7 @@ jobs:
         id: check-if-succeed
         if: ${{ success() }}
         run: |
-            env.succeedKeyJobNum= $(($env.succeedKeyJobNum+1))
+            ${{ env.azCliVersion }}= $((${{ env.azCliVersion }}+1))
 
 
   summary:
@@ -129,7 +129,7 @@ jobs:
     steps:
       - name: summarize jobs
         run: |
-            echo $env.succeedKeyJobNum
+            echo ${{ env.azCliVersion }}
 
       # - name: Create Resource Group
       #   id: create-resource-group
