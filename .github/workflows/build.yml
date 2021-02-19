@@ -132,7 +132,7 @@ jobs:
     steps:
       - name: summarize jobs
         run: |
-            echo $succeedKeyJobNum
+            echo "$succeedKeyJobNum"
 
       # - name: Create Resource Group
       #   id: create-resource-group
