@@ -25,6 +25,9 @@ jobs:
           repository: Azure/azure-javaee-iaas
           path: azure-javaee-iaas
           ref: 6807e2ae3e8a8492edf211b9f4f0b7ed3a2a29e7
+      - name: Init summary
+        run: |
+          echo "succeedKeyJobNum=0" >> $GITHUB_ENV
       # - name: Checkout Azure Resource Manager Template Toolkit 
       #   id: checkout-arm-ttk
       #   uses: actions/checkout@v2
@@ -120,7 +123,7 @@ jobs:
         id: check-if-succeed
         if: ${{ success() }}
         run: |
-            echo "env.succeedKeyJobNum=$(($GITHUB_ENV.succeedKeyJobNum+1))" >> $GITHUB_ENV
+            echo "succeedKeyJobNum=$(($succeedKeyJobNum+1))" >> $GITHUB_ENV
 
 
   summary:
@@ -129,7 +132,7 @@ jobs:
     steps:
       - name: summarize jobs
         run: |
-            echo $GITHUB_ENV.succeedKeyJobNum
+            echo $succeedKeyJobNum
 
       # - name: Create Resource Group
       #   id: create-resource-group
