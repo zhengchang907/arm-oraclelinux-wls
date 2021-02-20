@@ -133,9 +133,11 @@ jobs:
             fireTeamsEvent="$(($critical_job_num-$succeed_critical_job_num))"
             echo "fireTeamsEvent=${fireTeamsEvent}" >> $GITHUB_ENV
             echo "${{ env.fireTeamsEvent }}"
+            echo "${{ env.fireTeamsEvent >= 2 }}"
 
       - name: Send message to ms teams
         uses: dhollerbach/github-action-send-message-to-ms-teams@1.0.10
+        if: ${{ env.fireTeamsEvent >= 2 }}
         with:
           webhook: ${{ secrets.MSTEAMS_WEBHOOK }}
           message: "${{ env.fireTeamsEvent }}"
