@@ -135,6 +135,7 @@ jobs:
 
 
   summary:
+    if: always()
     needs: [deploy,deployfail]
     runs-on: ubuntu-latest
     steps:
