@@ -134,7 +134,7 @@ jobs:
       - name: summarize jobs
         run: |
             workflow_jobs=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/zhengchang907/arm-oraclelinux-wls/actions/runs/$github.run_id/jobs)
-echo $workflow_jobs
+            echo "$workflow_jobs"
 
             critical_job_num=$(echo $workflow_jobs | jq '.jobs | map(select(.name|test("^deploy."))) | length')
             echo "$critical_job_num"
