@@ -134,21 +134,14 @@ jobs:
             echo "$succeed_critical_job_num"
 
             echo "$(( $critical_job_num-$succeed_critical_job_num ))"
-            echo "fireTeamsEvent=$(( $critical_job_num-$succeed_critical_job_num ))" >> $GITHUB_ENV
+            echo "fireTeamsEvent=${{ $critical_job_num-$succeed_critical_job_num }}" >> $GITHUB_ENV
             echo "fireTeamsEvent=${ fireTeamsEvent }"
 
-      - uses: actions/checkout@master
-      - name: Microsoft Teams Notification
-        uses: skitionek/notify-microsoft-teams@master
-        if: always()
+      - name: Send message to ms teams
+        uses: dhollerbach/github-action-send-message-to-ms-teams@1.0.10
         with:
-          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
-          raw: >-
-            {
-              "@type": "MessageCard",
-              "@context": "http://schema.org/extensions",
-              "title": "It works"
-            }
+          webhook: ${{ secrets.MSTEAMS_WEBHOOK }}
+          message: 'W00t it werked!'
       
       # - name: Create Resource Group
       #   id: create-resource-group
