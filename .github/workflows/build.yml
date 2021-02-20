@@ -134,7 +134,7 @@ jobs:
             echo "$succeed_critical_job_num"
 
             echo "$(( $critical_job_num-$succeed_critical_job_num ))"
-            echo "fireTeamsEvent=${{ $critical_job_num-$succeed_critical_job_num }}" >> $GITHUB_ENV
+            echo "fireTeamsEvent=$( $critical_job_num-$succeed_critical_job_num )" >> $GITHUB_ENV
             echo "fireTeamsEvent=${ fireTeamsEvent }"
 
       - name: Send message to ms teams
