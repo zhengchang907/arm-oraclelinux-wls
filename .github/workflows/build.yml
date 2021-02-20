@@ -135,7 +135,7 @@ jobs:
 
             echo "$(( $critical_job_num-$succeed_critical_job_num ))"
             echo "fireTeamsEvent=$(( $critical_job_num-$succeed_critical_job_num ))" >> $GITHUB_ENV
-            echo "fireTeamsEvent=${{ $fireTeamsEvent }}"
+            echo "fireTeamsEvent=${ fireTeamsEvent }"
 
       - uses: actions/checkout@master
       - name: Microsoft Teams Notification
