@@ -130,17 +130,17 @@ jobs:
             succeed_critical_job_num=$(echo $workflow_jobs | jq '.jobs | map(select(.conclusion=="success") | select(.name|test("^deploy."))) | length')
             echo "$succeed_critical_job_num"
             echo "$(( $critical_job_num-$succeed_critical_job_num ))"
-            fireTeamsEvent="$(($critical_job_num-$succeed_critical_job_num))"
-            echo "fireTeamsEvent=${fireTeamsEvent}" >> $GITHUB_ENV
-            echo "${{ env.fireTeamsEvent }}"
-            echo "${{ env.fireTeamsEvent >= 2 }}"
+            failed_job_num="$(($critical_job_num-$succeed_critical_job_num))"
+            echo "failed_job_num=${failed_job_num}" >> $GITHUB_ENV
+            echo "${{ env.failed_job_num }}"
+            echo "${{ env.failed_job_num >= 2 }}"
 
       - name: Send message to ms teams
         uses: dhollerbach/github-action-send-message-to-ms-teams@1.0.10
-        if: ${{ env.fireTeamsEvent >= 2 }}
+        if: ${{ env.failed_job_num < 2 }}
         with:
           webhook: ${{ secrets.MSTEAMS_WEBHOOK }}
-          message: "${{ env.fireTeamsEvent }}"
+          message: "${{ env.failed_job_num }} jobs failed in arm-oraclelinux-wls workflow, please take a look at: https://github.com/zhengchang907/arm-oraclelinux-wls/actions/runs/${{ github.run_id }}"
 
       # - name: Create Resource Group
       #   id: create-resource-group
