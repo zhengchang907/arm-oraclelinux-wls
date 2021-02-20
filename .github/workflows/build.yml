@@ -130,7 +130,7 @@ jobs:
             succeed_critical_job_num=$(echo $workflow_jobs | jq '.jobs | map(select(.conclusion=="success") | select(.name|test("^deploy."))) | length')
             echo "$succeed_critical_job_num"
             echo "$(( $critical_job_num-$succeed_critical_job_num ))"
-            fireTeamsEvent="expr $critical_job_num - $succeed_critical_job_num"
+            fireTeamsEvent="$(($critical_job_num-$succeed_critical_job_num))"
             echo "fireTeamsEvent=${fireTeamsEvent}" >> $GITHUB_ENV
             echo "${{ env.fireTeamsEvent }}"
 
