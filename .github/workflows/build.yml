@@ -25,9 +25,9 @@ jobs:
           repository: Azure/azure-javaee-iaas
           path: azure-javaee-iaas
           ref: 6807e2ae3e8a8492edf211b9f4f0b7ed3a2a29e7
-      - name: Init summary
-        run: |
-          echo "succeedKeyJobNum=0" >> $GITHUB_ENV
+      # - name: Init summary
+      #   run: |
+      #     echo "succeedKeyJobNum=0" >> $GITHUB_ENV
       # - name: Checkout Azure Resource Manager Template Toolkit 
       #   id: checkout-arm-ttk
       #   uses: actions/checkout@v2
@@ -89,10 +89,10 @@ jobs:
           images: ["owls-122130-jdk8-ol73;Oracle:weblogic-122130-jdk8-ol73:owls-122130-jdk8-ol7;latest", "owls-122130-jdk8-ol74;Oracle:weblogic-122130-jdk8-ol74:owls-122130-jdk8-ol7;latest", "owls-122140-jdk8-ol76;Oracle:weblogic-122140-jdk8-ol76:owls-122140-jdk8-ol7;latest", "owls-141100-jdk8-ol76;Oracle:weblogic-141100-jdk8-ol76:owls-141100-jdk8-ol7;latest", "owls-141100-jdk11-ol76;Oracle:weblogic-141100-jdk11-ol76:owls-141100-jdk11-ol7;latest"]
 
     steps:
-      # - name: Checkout arm-oraclelinux-wls
-      #   uses: actions/checkout@v2
-      #   with:
-      #     path: arm-oraclelinux-wls
+      - name: Checkout arm-oraclelinux-wls
+        uses: actions/checkout@v2
+        with:
+          path: arm-oraclelinux-wls
       # - name: Get version information from arm-oraclelinux-wls/pom.xml
       #   id: version
       #   run: |
@@ -106,10 +106,10 @@ jobs:
       #   with:
       #     name: ${{steps.artifact_file.outputs.artifactName}}
 
-      - uses: azure/login@v1
-        id: azure-login
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # - uses: azure/login@v1
+      #   id: azure-login
+      #   with:
+      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
       # - name: Get Image SKU
       #   id: image-sku
       #   run: |
@@ -133,7 +133,7 @@ jobs:
     steps:
       - name: summarize jobs
         run: |
-            workflow_jobs=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/zhengchang907/arm-oraclelinux-wls/actions/runs/$github.run_id/jobs)
+            workflow_jobs=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/zhengchang907/arm-oraclelinux-wls/actions/runs/${{ github.run_id }}/jobs)
             echo "$workflow_jobs"
 
             critical_job_num=$(echo $workflow_jobs | jq '.jobs | map(select(.name|test("^deploy."))) | length')
@@ -142,7 +142,7 @@ jobs:
             succeed_critical_job_num=$(echo $workflow_jobs | jq '.jobs | map(select(.conclusion=="success") | select(.name|test("^deploy."))) | length')
             echo "$succeed_critical_job_num"
 
-            echo "$(( $critical_job_num - $succeed_critical_job_num ))"
+            echo "$(( $critical_job_num-$succeed_critical_job_num ))"
 
       # - name: Create Resource Group
       #   id: create-resource-group
