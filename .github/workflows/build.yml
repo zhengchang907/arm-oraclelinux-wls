@@ -135,7 +135,7 @@ jobs:
 
 
   summary:
-    needs: deploy
+    needs: [deploy,deployfail]
     runs-on: ubuntu-latest
     steps:
       - name: summarize jobs
