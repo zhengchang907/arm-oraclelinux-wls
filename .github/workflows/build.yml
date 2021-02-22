@@ -141,7 +141,7 @@ jobs:
     steps:
       - name: summarize jobs
         run: |
-          bash summary.sh \
+          bash arm-oraclelinux-wls/test/scripts/summary.sh \
             ${{ github.run_id }} \
             ${{ secrets.MSTEAMS_WEBHOOK }}
       
