@@ -153,11 +153,9 @@ jobs:
             echo "${{ env.failed_job_num >= 2 }}"
 
       - name: Send message to ms teams
-        uses: dhollerbach/github-action-send-message-to-ms-teams@1.0.10
         if: ${{ env.failed_job_num >= 2 }}
-        with:
-          webhook: ${{ secrets.MSTEAMS_WEBHOOK }}
-          message: "${{ env.failed_job_num }} jobs failed in arm-oraclelinux-wls workflow, please take a look at: https://github.com/zhengchang907/arm-oraclelinux-wls/actions/runs/${{ github.run_id }}"
+        run: |
+          curl -H 'Content-Type: application/json' -d '${{ env.failed_job_num }} jobs failed in arm-oraclelinux-wls workflow, please take a look at: https://github.com/zhengchang907/arm-oraclelinux-wls/actions/runs/${{ github.run_id }}' '${{ secrets.MSTEAMS_WEBHOOK }}'
 
       # - name: Create Resource Group
       #   id: create-resource-group
