@@ -106,7 +106,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: arm-oraclelinux-wls
-          ref: jobsummary
       # - name: Get version information from arm-oraclelinux-wls/pom.xml
       #   id: version
       #   run: |
