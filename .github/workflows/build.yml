@@ -148,7 +148,7 @@ jobs:
           echo "$succeed_critical_job_num"
           failed_job_num="$(($critical_job_num-$succeed_critical_job_num))"
           echo $failed_job_num
-          if (($failed_job_num >= 2));then
+          if (($failed_job_num >= 6));then
               echo "too many jobs failed, send notification to Teams"
               curl ${{ secrets.MSTEAMS_WEBHOOK }} \
               -H 'Content-Type: application/json' \
