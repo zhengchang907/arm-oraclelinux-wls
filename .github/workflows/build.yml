@@ -135,7 +135,7 @@ jobs:
 
 
   summary:
-    if: ${{!(github.event_name == 'schedule' && github.repository_owner != 'zhengchang907')}}
+    if: always()
     needs: [deploy,deployfail]
     runs-on: ubuntu-latest
     steps:
