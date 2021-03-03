@@ -255,11 +255,12 @@ jobs:
             az group delete --yes --no-wait --verbose --name $resourceGroup
 
   summary:
-    if: ${{!(github.event_name == 'schedule' && github.repository_owner != 'wls-eng')}}
+    if: always()
     needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: summarize jobs
+        if: ${{!(github.event_name == 'schedule' && github.repository_owner != 'wls-eng')}}
         run: |
           workflow_jobs=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/wls-eng/arm-oraclelinux-wls/actions/runs/${{ github.run_id }}/jobs)
           critical_job_num=$(echo $workflow_jobs | jq '.jobs | map(select(.name|test("^deploy."))) | length')
