@@ -77,5 +77,5 @@ When the deployment is completed, you can verify the appended rules via Azure Po
 * Visit the Azure Network Security Group under your resource group used above.
 * Go to `Settings -> Inbound security rules`.
 * Verify there is a rule named `WebLogicAdminPortsAllowed` with **Priority = '210'; Port = '7001, 7002'; Protocol = 'TCP'; Source = '10.0.0.0/24'; Aciton = 'Allow'**.
-* Verify there is a rule named `WebLogicManagedPortsAllowed` with **Priority = '220'; Port = '8001'; Protocol = '*'; Aciton = 'Deny'**.
+* Verify there is a rule named `WebLogicManagedPortsDenied` with **Priority = '221'; Port = '8001'; Protocol = '*'; Aciton = 'Deny'**.
 

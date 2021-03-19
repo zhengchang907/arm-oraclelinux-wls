@@ -4,13 +4,13 @@ all:
 	cp subtemplate-src/admin-aadNestedTemplate.md admin/aadNestedTemplate.md
 	cp subtemplate-src/admin-customDNSTemplate.md admin/customDNSTemplate.md
 	cp subtemplate-src/admin-elkNestedTemplate.md admin/elkNestedTemplate.md
-	cp subtemplate-src/admin-nsgRulesTemplate.md cluster/nsgRulesTemplate.md
 	cp subtemplate-src/appGatewayNestedTemplate.md cluster
 	cp subtemplate-src/cluster-aadNestedTemplate.md cluster/aadNestedTemplate.md
 	cp subtemplate-src/cluster-addnode.md cluster/addnode.md
 	cp subtemplate-src/cluster-customDNSTemplate.md cluster/customDNSTemplate.md
 	cp subtemplate-src/cluster-deletenode.md cluster/deletenode.md
 	cp subtemplate-src/cluster-elkNestedTemplate.md cluster/elkNestedTemplate.md
+	cp subtemplate-src/cluster-nsgRulesTemplate.md cluster/nsgRulesTemplate.md
 	cp subtemplate-src/coherenceTemplate.md cluster/coherenceTemplate.md
 	cp subtemplate-src/coherenceTemplate.md dynamic-cluster/coherenceTemplate.md
 	cp subtemplate-src/dbTemplate.md admin
