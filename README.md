@@ -15,9 +15,9 @@ The basic offering will bootstrap an Oracle Linux VM with pre-installed WebLogic
 
 Apart from the basic offering, the following are few of the other single/multinode deployment offers that are available in the Azure Marketplace:
 
--	Oracle WebLogic Server with Administration Server
--	Oracle WebLogic Server N-Node cluster
--	Oracle WebLogic Server N-Node dynamic cluster
+- Oracle WebLogic Server with Administration Server
+- Oracle WebLogic Server N-Node cluster
+- Oracle WebLogic Server N-Node dynamic cluster
 
 ---
 
@@ -29,11 +29,11 @@ Each of these Azure Marketplace WebLogic Server Offerings also have their corres
 
 The following are the corresponding github repositories:
 
--	[https://github.com/wls-eng/arm-oraclelinux-wls-admin](https://github.com/wls-eng/arm-oraclelinux-wls-admin)
+- [https://github.com/wls-eng/arm-oraclelinux-wls-admin](https://github.com/wls-eng/arm-oraclelinux-wls-admin)
 
--	[https://github.com/wls-eng/arm-oraclelinux-wls-cluster](https://github.com/wls-eng/arm-oraclelinux-wls-cluster)
+- [https://github.com/wls-eng/arm-oraclelinux-wls-cluster](https://github.com/wls-eng/arm-oraclelinux-wls-cluster)
 
--	[https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster](https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster)
+- [https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster](https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster)
 
 
 ## Issue Tracker
@@ -41,3 +41,22 @@ The following are the corresponding github repositories:
 Any Issue related to Oracle WebLogic on Microsoft Azure implementation is tracked at <br> [https://github.com/wls-eng/arm-oraclelinux-wls/issues](https://github.com/wls-eng/arm-oraclelinux-wls/issues). <br>
 This is a common issue tracker and tracks all issues across all the WebLogic Server offerings 
 
+## Workflow Tracker
+
+This section tracks GitHub Actions configured for each offer repo, 'Build and Test' and 'New Tag' are two different workflows.
+|  Offer Repo  |   Build and Test | New Tag |
+|--- |--- |--- |
+| [Single Node](https://github.com/wls-eng/arm-oraclelinux-wls)| [Build and Test](https://github.com/wls-eng/arm-oraclelinux-wls/actions?query=workflow%3A%22Build+and+Test%22) ![Build and Test](https://github.com/wls-eng/arm-oraclelinux-wls/workflows/Build%20and%20Test/badge.svg)| [New Tag](https://github.com/wls-eng/arm-oraclelinux-wls/actions?query=workflow%3A%22New+Tag%22) ![New Tag](https://github.com/wls-eng/arm-oraclelinux-wls/workflows/New%20Tag/badge.svg) |
+| [Admin](https://github.com/wls-eng/arm-oraclelinux-wls-admin)   | [Build and Test](https://github.com/wls-eng/arm-oraclelinux-wls-admin/actions?query=workflow%3A%22Build+and+Test%22)  ![Build and Test](https://github.com/wls-eng/arm-oraclelinux-wls-admin/workflows/Build%20and%20Test/badge.svg) | [New Tag](https://github.com/wls-eng/arm-oraclelinux-wls-admin/actions?query=workflow%3A%22New+Tag%22) ![New Tag](https://github.com/wls-eng/arm-oraclelinux-wls-admin/workflows/New%20Tag/badge.svg) |
+| [Configured Cluster](https://github.com/wls-eng/arm-oraclelinux-wls-cluster)  | [Build and Test](https://github.com/wls-eng/arm-oraclelinux-wls-cluster/actions?query=workflow%3A%22Build+and+Test%22)  ![Build and Test](https://github.com/wls-eng/arm-oraclelinux-wls-cluster/workflows/Build%20and%20Test/badge.svg) | [New Tag](https://github.com/wls-eng/arm-oraclelinux-wls-cluster/actions?query=workflow%3A%22New+Tag%22) ![New Tag](https://github.com/wls-eng/arm-oraclelinux-wls-cluster/workflows/New%20Tag/badge.svg) |
+|  [Dynamic Cluster](https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster)  |  [Build and Test](https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster/actions?query=workflow%3A%22Build+and+Test%22) ![Build and Test](https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster/workflows/Build%20and%20Test/badge.svg) | [New Tag](https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster/actions?query=workflow%3A%22New+Tag%22) ![New Tag](https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster/workflows/New%20Tag/badge.svg) |
+
+## Pull Requests
+
+This section tracks GitHub pull requests for each offer repo.
+|  Offer Repo  |   Pull Requests |
+|--- |--- |
+| [Single Node](https://github.com/wls-eng/arm-oraclelinux-wls)| [Pulls](https://github.com/wls-eng/arm-oraclelinux-wls/pulls)|
+| [Admin](https://github.com/wls-eng/arm-oraclelinux-wls-admin)   | [Pulls](https://github.com/wls-eng/arm-oraclelinux-wls-admin/pulls) |
+| [Configured Cluster](https://github.com/wls-eng/arm-oraclelinux-wls-cluster)  | [Pulls](https://github.com/wls-eng/arm-oraclelinux-wls-cluster/pulls) |
+|  [Dynamic Cluster](https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster)  | [Pulls](https://github.com/wls-eng/arm-oraclelinux-wls-dynamic-cluster/pulls) |
