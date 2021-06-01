@@ -1,11 +1,12 @@
 name: Build and Test
 
 on: 
-  push:
-    branches:
-      - develop
-  schedule:
-      - cron:  '0 7 * * *'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  # Allows you to run this workflow using GitHub APIs
+  # PERSONAL_ACCESS_TOKEN=<GITHUB_PERSONAL_ACCESS_TOKEN>
+  # REPO_NAME=wls-eng/arm-oraclelinux-wls
+  # curl --verbose -XPOST -u "wls-eng:${PERSONAL_ACCESS_TOKEN}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${REPO_NAME}/dispatches --data '{"event_type": "production-deploy"}'
   repository_dispatch:
 
 env:
@@ -186,9 +187,9 @@ jobs:
           inlineScript: |
             echo "query existing source address prefixes"
             attempts=0
-            while [ -z `az network nsg show -g $resourceGroup -n ${nsg} | grep "NRMS-Rule-101"` ] && [ $attempts -lt 20 ];
+            while [ -z `az network nsg show -g $resourceGroup -n ${nsg} | grep "WebLogicPorts"` ] && [ $attempts -lt 20 ];
             do
-              echo "network security group rule NRMS-Rule-101 is not ready"
+              echo "network security group rule WebLogicPorts is not ready"
               attempts=$((attempts + 1))
               sleep 1m
             done
@@ -196,7 +197,7 @@ jobs:
             sourceAddressPrefixes=$(az network nsg rule show \
               --resource-group ${resourceGroup} \
               --nsg-name ${{ env.nsg }} \
-              --name NRMS-Rule-101 \
+              --name WebLogicPorts \
               --query "sourceAddressPrefixes")
             echo "IP of this machine: " ${myIP}
             sourceAddressPrefixes=$(echo ${myIP} ${sourceAddressPrefixes} | \
@@ -205,7 +206,7 @@ jobs:
             az network nsg rule update \
               --resource-group ${resourceGroup} \
               --nsg-name ${{ env.nsg }} \
-              --name NRMS-Rule-101 \
+              --name WebLogicPorts \
               --source-address-prefixes $sourceAddressPrefixes \
               --destination-port-ranges 443 22
 
